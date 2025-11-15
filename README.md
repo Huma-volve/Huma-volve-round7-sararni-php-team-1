@@ -346,9 +346,6 @@ curl -X POST http://localhost:8000/api/v1/auth/register \
   }'
 ```
 
-### Postman Collection
-
-Import the Postman collection from [`postman/Safarni_API_Collection.json`](postman/Safarni_API_Collection.json) for easy API testing.
 
 ---
 
@@ -475,56 +472,6 @@ This project follows Laravel coding standards and uses:
 - Keep controllers thin, move business logic to services
 - Use Form Requests for validation
 - Use API Resources for response formatting
-
----
-
-## 📝 API Endpoints Overview
-
-### Authentication
-- `POST /api/v1/auth/register` - Register new user
-- `POST /api/v1/auth/verify-otp` - Verify OTP
-- `POST /api/v1/auth/login` - Login
-- `POST /api/v1/auth/logout` - Logout
-- `POST /api/v1/auth/forgot-password` - Request password reset
-- `POST /api/v1/auth/reset-password` - Reset password
-
-### Google OAuth
-- `GET /api/v1/auth/google/url` - Get OAuth URL
-- `POST /api/v1/auth/google/exchange` - Exchange code for token
-- `POST /api/v1/auth/google/link` - Link Google account
-- `POST /api/v1/auth/google/unlink` - Unlink Google account
-
-### Tours
-- `GET /api/v1/tours` - List tours (with filters)
-- `GET /api/v1/tours/{id}` - Get tour details
-- `GET /api/v1/tours/{id}/similar` - Get similar tours
-- `GET /api/v1/tours/featured` - Get featured tours
-- `GET /api/v1/tours/search` - Search tours
-
-### Bookings
-- `POST /api/v1/bookings/check-availability` - Check availability
-- `POST /api/v1/bookings/calculate-price` - Calculate price
-- `POST /api/v1/bookings` - Create booking
-- `GET /api/v1/bookings` - List user bookings
-- `GET /api/v1/bookings/{id}` - Get booking details
-- `POST /api/v1/bookings/{id}/confirm` - Confirm booking
-- `POST /api/v1/bookings/{id}/cancel` - Cancel booking
-
-### Reviews
-- `POST /api/v1/reviews` - Create review
-- `PUT /api/v1/reviews/{id}` - Update review
-- `DELETE /api/v1/reviews/{id}` - Delete review
-
-### Favorites
-- `GET /api/v1/favorites` - List favorites
-- `POST /api/v1/favorites/{tourId}/toggle` - Toggle favorite
-- `GET /api/v1/favorites/{tourId}/check` - Check if favorited
-
-### Questions
-- `POST /api/v1/questions` - Ask question
-- `POST /api/v1/questions/{id}/answer` - Answer question (Admin)
-
-For complete API documentation, see [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md)
 
 ---
 
