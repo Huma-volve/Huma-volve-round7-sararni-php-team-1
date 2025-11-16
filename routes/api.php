@@ -1,6 +1,14 @@
 <?php
 
+
+use App\Http\Controllers\Api\CarController;
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\BrandController;
+
+
 use Illuminate\Support\Facades\Route;
+
 
 Route::prefix('v1')->group(function () {
     // Auth routes
@@ -41,5 +49,9 @@ Route::prefix('v1')->group(function () {
     // Search routes
     Route::prefix('search')->group(function () {
         require __DIR__.'/api/v1/search.php';
+    });
+    //  Car routes
+    Route::prefix('cars')->group(function () {
+        require __DIR__.'/api/v1/cars.php';
     });
 });
