@@ -57,4 +57,10 @@ class Flight extends Model
         return $this->hasMany(Booking::class, 'item_id')
             ->where('category', 'flight');
     }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class, 'item_id')
+            ->where('category', 'flight');
+    }
 }
