@@ -111,7 +111,8 @@ class Tour extends Model implements HasMedia
 
     public function bookings(): HasMany
     {
-        return $this->hasMany(Booking::class);
+        return $this->hasMany(Booking::class, 'item_id')
+            ->where('category', 'tour');
     }
 
     public function reviews(): HasMany

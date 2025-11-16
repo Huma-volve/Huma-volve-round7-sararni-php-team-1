@@ -87,7 +87,7 @@ class BookingController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => __('messages.booking.created'),
-                'data' => new BookingResource($booking->load('tour')),
+                'data' => new BookingResource($booking->load(['details', 'participants'])),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -107,7 +107,7 @@ class BookingController extends Controller
             $booking = $this->bookingService->confirmBooking($booking->id, $request->validated());
 
             return $this->successResponse(
-                new BookingResource($booking->load('tour')),
+                new BookingResource($booking->load(['details', 'participants', 'item'])),
                 __('messages.booking.confirmed')
             );
         } catch (\Exception $e) {
@@ -123,19 +123,23 @@ class BookingController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Booking::query()
-            ->with('tour')
+            ->with(['details', 'participants'])
             ->where('user_id', $request->user()->id);
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         if ($request->filled('date_from')) {
-            $query->where('tour_date', '>=', $request->date_from);
+            $query->where('booking_date', '>=', $request->date_from);
         }
 
         if ($request->filled('date_to')) {
-            $query->where('tour_date', '<=', $request->date_to);
+            $query->where('booking_date', '<=', $request->date_to);
         }
 
         $pageSize = $request->input('page_size', 20);
@@ -156,7 +160,7 @@ class BookingController extends Controller
 
     public function show(Request $request, int $id): JsonResponse
     {
-        $booking = Booking::with('tour')
+        $booking = Booking::with(['details', 'participants', 'item'])
             ->where('user_id', $request->user()->id)
             ->find($id);
 
@@ -181,7 +185,7 @@ class BookingController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => __('messages.booking.cancelled'),
-                'data' => new BookingResource($booking->load('tour')),
+                'data' => new BookingResource($booking->load(['details', 'participants'])),
             ]);
         } catch (\Exception $e) {
             return response()->json([

@@ -16,7 +16,8 @@ class ReviewSeeder extends Seeder
     public function run(): void
     {
         $completedBookings = Booking::where('status', 'completed')
-            ->with(['user', 'tour'])
+            ->where('category', 'tour')
+            ->with(['user'])
             ->get();
 
         $customer = User::where('email', 'customer@test.com')->first();
@@ -171,7 +172,7 @@ class ReviewSeeder extends Seeder
 
                 $review = Review::create([
                     'user_id' => $booking->user_id,
-                    'tour_id' => $booking->tour_id,
+                    'tour_id' => $booking->item_id, // item_id is tour_id for tour bookings
                     'booking_id' => $booking->id,
                     'rating' => $rating,
                     'status' => $status,
@@ -222,8 +223,11 @@ class ReviewSeeder extends Seeder
 
                 $review->save();
 
-                if ($status === 'approved') {
-                    $booking->tour->updateRating();
+                if ($status === 'approved' && $booking->category === 'tour') {
+                    $tour = Tour::find($booking->item_id);
+                    if ($tour) {
+                        $tour->updateRating();
+                    }
                 }
             }
         }

@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\Brand;
-use App\Models\CarPriceTier;
-use App\Models\Location;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Car extends Model
 {
@@ -14,7 +12,7 @@ class Car extends Model
         'brand_id', 'model', 'category', 'make', 'seats_count', 'doors',
         'fuel_type', 'transmission', 'luggage_capacity', 'air_conditioning',
         'features', 'pickup_location_id', 'dropoff_location_id', 'license_requirements',
-        'availability_calendar', 'cancellation_policy', 'created_by', 'updated_by'
+        'availability_calendar', 'cancellation_policy', 'created_by', 'updated_by',
     ];
 
     public function brand()
@@ -24,15 +22,22 @@ class Car extends Model
 
     public function pickupLocation()
     {
-        return $this->belongsTo(Location::class,'pickup_location_id');
+        return $this->belongsTo(Location::class, 'pickup_location_id');
     }
 
     public function dropoff_location_id()
     {
-        return $this->belongsTo(Location::class,'dropoff_location_id');
+        return $this->belongsTo(Location::class, 'dropoff_location_id');
     }
 
-     public function priceTiers() {
+    public function priceTiers()
+    {
         return $this->hasMany(CarPriceTier::class);
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'item_id')
+            ->where('category', 'car');
     }
 }
