@@ -122,7 +122,8 @@ class Tour extends Model implements HasMedia
 
     public function favorites(): HasMany
     {
-        return $this->hasMany(Favorite::class);
+        return $this->hasMany(Favorite::class, 'item_id')
+            ->where('category', 'tour');
     }
 
     public function questions(): HasMany

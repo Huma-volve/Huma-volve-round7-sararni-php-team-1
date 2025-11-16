@@ -40,4 +40,10 @@ class Hotel extends Model
         return $this->hasMany(Booking::class, 'item_id')
             ->where('category', 'hotel');
     }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class, 'item_id')
+            ->where('category', 'hotel');
+    }
 }

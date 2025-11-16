@@ -40,4 +40,10 @@ class Car extends Model
         return $this->hasMany(Booking::class, 'item_id')
             ->where('category', 'car');
     }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class, 'item_id')
+            ->where('category', 'car');
+    }
 }

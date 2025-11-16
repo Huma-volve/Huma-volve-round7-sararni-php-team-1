@@ -12,7 +12,8 @@ class Favorite extends Model
 
     protected $fillable = [
         'user_id',
-        'tour_id',
+        'category',
+        'item_id',
     ];
 
     public function user(): BelongsTo
@@ -20,18 +21,50 @@ class Favorite extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function tour(): BelongsTo
+    /**
+     * Get the item (tour/hotel/car/flight) based on category
+     */
+    public function getItemAttribute()
     {
-        return $this->belongsTo(Tour::class);
+        return match ($this->category) {
+            'tour' => Tour::find($this->item_id),
+            'hotel' => Hotel::find($this->item_id),
+            'car' => Car::find($this->item_id),
+            'flight' => Flight::find($this->item_id),
+            default => null,
+        };
     }
 
+    /**
+     * Get tour relationship (for backward compatibility)
+     */
+    public function tour(): ?BelongsTo
+    {
+        if ($this->category === 'tour') {
+            return $this->belongsTo(Tour::class, 'item_id');
+        }
+
+        return null;
+    }
+
+    // Scopes
     public function scopeByUser($query, int $userId)
     {
         return $query->where('user_id', $userId);
     }
 
+    public function scopeByCategory($query, string $category)
+    {
+        return $query->where('category', $category);
+    }
+
+    public function scopeByItem($query, int $itemId)
+    {
+        return $query->where('item_id', $itemId);
+    }
+
     public function scopeByTour($query, int $tourId)
     {
-        return $query->where('tour_id', $tourId);
+        return $query->where('category', 'tour')->where('item_id', $tourId);
     }
 }
