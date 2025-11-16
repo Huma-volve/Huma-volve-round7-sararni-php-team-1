@@ -37,4 +37,9 @@ Route::prefix('v1')->group(function () {
     Route::prefix('users')->group(function () {
         require __DIR__.'/api/v1/users.php';
     });
+
+    // Search routes
+    Route::prefix('search')->group(function () {
+        require __DIR__.'/api/v1/search.php';
+    });
 });

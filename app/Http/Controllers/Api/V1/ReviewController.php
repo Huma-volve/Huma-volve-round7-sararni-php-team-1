@@ -37,7 +37,8 @@ class ReviewController extends Controller
     public function store(CreateReviewRequest $request): JsonResponse
     {
         $booking = Booking::where('user_id', $request->user()->id)
-            ->where('tour_id', $request->tour_id)
+            ->where('category', 'tour')
+            ->where('item_id', $request->tour_id)
             ->where('id', $request->booking_id)
             ->firstOrFail();
 

@@ -107,26 +107,44 @@ class BookingService
             // Create booking
             $booking = Booking::create([
                 'user_id' => $data['user_id'],
-                'tour_id' => $tour->id,
-                'tour_date' => $data['date'],
-                'tour_time' => $data['time'] ?? null,
-                'adults_count' => $data['adults'],
-                'children_count' => $data['children'] ?? 0,
-                'infants_count' => $data['infants'] ?? 0,
-                'adult_price' => $priceData['adult_price'],
-                'child_price' => $priceData['child_price'],
-                'infant_price' => $priceData['infant_price'],
-                'discount_amount' => $priceData['discount_amount'],
-                'total_amount' => $priceData['total'],
+                'category' => 'tour',
+                'item_id' => $tour->id,
+                'total_price' => $priceData['total'],
+                'currency' => config('app.currency', 'USD'),
                 'status' => 'pending',
                 'payment_status' => 'pending',
+                'booking_date' => $data['date'],
+                'booking_time' => $data['time'] ?? null,
+                'pickup_date' => $data['date'],
                 'special_requests' => $data['special_requests'] ?? null,
+            ]);
+
+            // Create booking details
+            $booking->details()->create([
+                'meta' => [
+                    'adults_count' => $data['adults'],
+                    'children_count' => $data['children'] ?? 0,
+                    'infants_count' => $data['infants'] ?? 0,
+                    'adult_price' => $priceData['adult_price'],
+                    'child_price' => $priceData['child_price'],
+                    'infant_price' => $priceData['infant_price'],
+                    'discount_amount' => $priceData['discount_amount'],
+                ],
+            ]);
+
+            // Create at least one participant (primary participant)
+            $user = \App\Models\User::find($data['user_id']);
+            $booking->participants()->create([
+                'first_name' => $data['participant_first_name'] ?? $user?->name ?? 'Guest',
+                'last_name' => $data['participant_last_name'] ?? '',
+                'email' => $data['participant_email'] ?? $user?->email,
+                'phone' => $data['participant_phone'] ?? $user?->phone,
             ]);
 
             // Update tour booking count
             $tour->increment('total_bookings');
 
-            return $booking;
+            return $booking->load(['details', 'participants']);
         });
     }
 
@@ -148,14 +166,14 @@ class BookingService
 
             // TODO: Send confirmation email
 
-            return $booking->fresh();
+            return $booking->fresh(['details']);
         });
     }
 
     public function cancelBooking(int $bookingId, ?string $reason = null): Booking
     {
         return DB::transaction(function () use ($bookingId, $reason) {
-            $booking = Booking::with('tour')->findOrFail($bookingId);
+            $booking = Booking::with(['details'])->findOrFail($bookingId);
 
             if (! $booking->canBeCancelled()) {
                 throw new \Exception(__('messages.booking.cannot_cancel'));
@@ -171,7 +189,7 @@ class BookingService
 
             // TODO: Send cancellation email
 
-            return $booking->fresh();
+            return $booking->fresh(['details']);
         });
     }
 }

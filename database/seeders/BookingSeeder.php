@@ -80,15 +80,39 @@ class BookingSeeder extends Seeder
 
                 $paidAmount = $paymentStatus === 'paid' ? $totalAmount : ($paymentStatus === 'refunded' ? $totalAmount : 0);
 
-                $booking = Booking::firstOrCreate(
-                    [
-                        'user_id' => $customer->id,
-                        'tour_id' => $tour->id,
-                        'tour_date' => $availability->date,
-                    ],
-                    [
-                        'booking_number' => Booking::make()->generateBookingNumber(),
-                        'tour_time' => '09:00:00',
+                // Check if booking already exists
+                $existingBooking = Booking::where('user_id', $customer->id)
+                    ->where('category', 'tour')
+                    ->where('item_id', $tour->id)
+                    ->where('pickup_date', $availability->date)
+                    ->first();
+
+                if ($existingBooking) {
+                    continue;
+                }
+
+                $booking = Booking::create([
+                    'user_id' => $customer->id,
+                    'category' => 'tour',
+                    'item_id' => $tour->id,
+                    'total_price' => $totalAmount,
+                    'currency' => 'USD',
+                    'status' => $status,
+                    'payment_status' => $paymentStatus,
+                    'payment_method' => $paymentStatus === 'paid' ? $paymentMethods[array_rand($paymentMethods)] : null,
+                    'payment_reference' => $paymentStatus === 'paid' ? 'REF-'.strtoupper(uniqid()) : null,
+                    'booking_date' => $availability->date,
+                    'booking_time' => '09:00:00',
+                    'pickup_date' => $availability->date,
+                    'special_requests' => rand(0, 1) ? 'Please provide vegetarian meals' : null,
+                    'cancellation_reason' => $status === 'cancelled' ? 'Change of plans' : null,
+                    'cancelled_at' => $status === 'cancelled' ? now()->subDays(rand(1, 10)) : null,
+                    'cancelled_by' => $status === 'cancelled' ? 'user' : null,
+                ]);
+
+                // Create booking details
+                $booking->details()->create([
+                    'meta' => [
                         'adults_count' => $adults,
                         'children_count' => $children,
                         'infants_count' => $infants,
@@ -96,17 +120,19 @@ class BookingSeeder extends Seeder
                         'child_price' => $childPrice,
                         'infant_price' => $infantPrice,
                         'discount_amount' => $discountAmount,
-                        'total_amount' => $totalAmount,
-                        'paid_amount' => $paidAmount,
-                        'status' => $status,
-                        'payment_status' => $paymentStatus,
-                        'payment_method' => $paymentStatus === 'paid' ? $paymentMethods[array_rand($paymentMethods)] : null,
-                        'payment_reference' => $paymentStatus === 'paid' ? 'REF-'.strtoupper(uniqid()) : null,
-                        'special_requests' => rand(0, 1) ? 'Please provide vegetarian meals' : null,
-                        'cancellation_reason' => $status === 'cancelled' ? 'Change of plans' : null,
-                        'cancelled_at' => $status === 'cancelled' ? now()->subDays(rand(1, 10)) : null,
-                    ]
-                );
+                    ],
+                ]);
+
+                // Create participants (at least one adult)
+                for ($j = 0; $j < $adults; $j++) {
+                    $booking->participants()->create([
+                        'title' => ['Mr', 'Mrs', 'Ms'][array_rand(['Mr', 'Mrs', 'Ms'])],
+                        'first_name' => fake()->firstName(),
+                        'last_name' => fake()->lastName(),
+                        'email' => $j === 0 ? $customer->email : null, // First participant gets customer email
+                        'phone' => $j === 0 ? $customer->phone : null,
+                    ]);
+                }
 
                 // Update availability booked slots
                 if ($status !== 'cancelled') {

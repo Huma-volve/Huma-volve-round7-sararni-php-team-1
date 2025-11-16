@@ -13,35 +13,53 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+
+            // User
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('tour_id')->constrained('tours')->onDelete('restrict');
-            $table->string('booking_number')->unique();
-            $table->date('tour_date');
-            $table->time('tour_time')->nullable();
-            $table->integer('adults_count')->default(0);
-            $table->integer('children_count')->default(0);
-            $table->integer('infants_count')->default(0);
-            $table->decimal('adult_price', 10, 2);
-            $table->decimal('child_price', 10, 2)->nullable();
-            $table->decimal('infant_price', 10, 2)->nullable();
-            $table->decimal('discount_amount', 10, 2)->default(0);
-            $table->decimal('total_amount', 10, 2);
-            $table->decimal('paid_amount', 10, 2)->default(0);
-            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed', 'refunded'])->default('pending');
-            $table->enum('payment_status', ['pending', 'paid', 'failed', 'refunded'])->default('pending');
+
+            // Booking Reference
+            $table->string('booking_reference', 50)->unique();
+
+            // Category & Item
+            $table->enum('category', ['tour', 'flight', 'car', 'hotel'])->index();
+            $table->unsignedBigInteger('item_id')->comment('ID of tour/flight/car/hotel');
+
+            // Status
+            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed', 'refunded'])
+                ->default('pending')
+                ->index();
+
+            // Pricing
+            $table->decimal('total_price', 10, 2);
+            $table->string('currency', 3)->default('USD');
+
+            // Payment
+            $table->enum('payment_status', ['pending', 'paid', 'failed', 'refunded', 'partial'])
+                ->default('pending')
+                ->index();
             $table->string('payment_method')->nullable();
             $table->string('payment_reference')->nullable();
+
+            // Dates (مشتركة - nullable حسب النوع)
+            $table->date('booking_date')->index();
+            $table->time('booking_time')->nullable();
+            $table->date('check_in_date')->nullable()->comment('For hotels');
+            $table->date('check_out_date')->nullable()->comment('For hotels');
+            $table->date('pickup_date')->nullable()->comment('For cars/tours');
+            $table->date('dropoff_date')->nullable()->comment('For cars');
+
+            // Common fields
             $table->text('special_requests')->nullable();
             $table->text('cancellation_reason')->nullable();
             $table->timestamp('cancelled_at')->nullable();
+            $table->enum('cancelled_by', ['user', 'admin', 'system'])->nullable();
+
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index('tour_id');
-            $table->index('user_id');
-            $table->index('status');
-            $table->index('payment_status');
-            $table->index('tour_date');
+            // Indexes
+            $table->index(['user_id', 'category', 'status', 'booking_date']);
+            $table->index('item_id');
         });
     }
 
