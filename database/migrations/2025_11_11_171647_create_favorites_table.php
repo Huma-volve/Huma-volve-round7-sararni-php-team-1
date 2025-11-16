@@ -12,11 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('favorites', function (Blueprint $table) {
-             $table->id();
-            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
-            $table->integer('item_id');
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('tour_id')->constrained('tours')->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();
+
+            $table->unique(['user_id', 'tour_id']);
+            $table->index('user_id');
+            $table->index('tour_id');
         });
     }
 

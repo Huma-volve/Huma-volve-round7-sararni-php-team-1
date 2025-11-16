@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('flights', function (Blueprint $table) {
+        Schema::create('flights', function (Blueprint $table) {
             $table->id();
             $table->integer('flight_number');
             $table->foreignId('carrier_id')->constrained()->onDelete('cascade');
-            $table->foreignId('aircraft_id')->nullable()->constrained('aircrafts')->onDelete('set null'); 
+            $table->foreignId('aircraft_id')->nullable()->constrained('aircrafts')->onDelete('set null');
             $table->foreignId('destination_id')->constrained('locations')->onDelete('cascade');
             $table->foreignId('origin_id')->constrained('locations')->onDelete('cascade');
-            $table->timestamp('arrival_time');
-            $table->timestamp('departure_time');
+            $table->timestamp('arrival_time')->nullable();
+            $table->timestamp('departure_time')->nullable();
             $table->integer('duration_minutes');
             $table->timestamps();
             $table->softDeletes();
