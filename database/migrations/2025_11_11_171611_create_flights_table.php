@@ -13,6 +13,7 @@ return new class extends Migration
     {
        Schema::create('flights', function (Blueprint $table) {
             $table->id();
+
             $table->integer('flight_number');
             $table->foreignId('carrier_id')->constrained()->onDelete('cascade');
             $table->foreignId('aircraft_id')->nullable()->constrained('aircrafts')->onDelete('set null'); 
@@ -21,10 +22,10 @@ return new class extends Migration
             $table->timestamp('arrival_time');
             $table->timestamp('departure_time');
             $table->integer('duration_minutes');
+
             $table->timestamps();
             $table->softDeletes();
         });
-
     }
 
     /**

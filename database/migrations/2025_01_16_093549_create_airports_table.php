@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('carriers', function (Blueprint $table) {
+        Schema::create('airports', function (Blueprint $table) {
             $table->id();
-            $table->string('carrier_name');
-            $table->string('code')->unique();
+            $table->string('airport_code')->unique();
+            $table->string('airport_name');
+            $table->string('city');
+            $table->string('country');
+            $table->decimal('latitude', 10, 6)->nullable();
+            $table->decimal('longitude', 10, 6)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -25,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('carriers');
+        Schema::dropIfExists('airports');
     }
 };
