@@ -1,15 +1,18 @@
 <?php
 
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\Api\CarController;
 use App\Http\Controllers\Api\V1\AuthController;
-
-
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\FlightController;
 
+
+// Google OAuth callback (direct route without v1 prefix)
+Route::get('/google/callback', [AuthController::class, 'googleCallback']);
+
+// Google login direct route
+Route::post('/v1/google-login', [AuthController::class, 'googleLogin']);
 
 Route::prefix('v1')->group(function () {
     // Auth routes

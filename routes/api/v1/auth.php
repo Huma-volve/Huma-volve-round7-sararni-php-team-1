@@ -19,6 +19,8 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middle
 // Google OAuth routes
 Route::get('/google/url', [AuthController::class, 'getGoogleAuthUrl']);
 Route::post('/google/exchange', [AuthController::class, 'exchangeGoogleCode']);
+Route::post('/google-login', [AuthController::class, 'googleLogin']);
+Route::post('/google/user-data', [AuthController::class, 'getGoogleUserData']);
 
 // Protected auth routes
 Route::middleware('auth:sanctum')->group(function () {
