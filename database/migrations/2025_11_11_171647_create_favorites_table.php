@@ -14,15 +14,14 @@ return new class extends Migration
         Schema::create('favorites', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->enum('category', ['tour', 'hotel', 'car', 'flight'])->index();
+            $table->enum('category', ['tour', 'hotel', 'car', 'flight']);
             $table->unsignedBigInteger('item_id')->comment('ID of tour/hotel/car/flight');
             $table->timestamps();
 
             $table->unique(['user_id', 'category', 'item_id']);
             $table->index('user_id');
-            $table->index('category');
             $table->index('item_id');
-            $table->index(['user_id', 'category']);
+            $table->index(['category', 'item_id']);
         });
     }
 
