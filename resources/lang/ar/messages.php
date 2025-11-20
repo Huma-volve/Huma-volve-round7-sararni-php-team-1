@@ -40,4 +40,36 @@ return [
     'error.oauth_error' => 'فشلت مصادقة OAuth.',
     'error.link_error' => 'فشل ربط الحساب.',
     'error.unlink_error' => 'فشل إلغاء ربط الحساب.',
+    'error.unauthorized' => 'هذا الإجراء غير مصرح به. فقط المديرون وموظفو الدعم يمكنهم تنفيذ هذا الإجراء.',
+
+    // Booking messages
+    'booking.created' => 'تم إنشاء الحجز بنجاح.',
+    'booking.confirmed' => 'تم تأكيد الحجز بنجاح.',
+    'booking.cancelled' => 'تم إلغاء الحجز بنجاح.',
+    'booking.not_found' => 'الحجز غير موجود.',
+    'booking.tour_not_active' => 'هذه الجولة غير نشطة حالياً.',
+    'booking.min_participants' => 'الحد الأدنى :min مشارك مطلوب.',
+    'booking.max_participants' => 'الحد الأقصى :max مشارك مسموح.',
+    'booking.date_not_available' => 'التاريخ المحدد غير متاح.',
+    'booking.insufficient_slots' => 'الأماكن المتاحة غير كافية. المتاح: :available، المطلوب: :required.',
+    'booking.available' => 'الجولة متاحة للتاريخ المحدد.',
+    'booking.booking_failed' => 'فشل الحجز. يرجى المحاولة مرة أخرى.',
+    'booking.invalid_status' => 'حالة الحجز غير صحيحة.',
+    'booking.cannot_cancel' => 'لا يمكن إلغاء هذا الحجز.',
+
+    // Review messages
+    'review.created' => 'تم إرسال التقييم بنجاح. سيتم نشره بعد المراجعة.',
+    'review.updated' => 'تم تحديث التقييم بنجاح.',
+    'review.deleted' => 'تم حذف التقييم بنجاح.',
+    'review.not_found' => 'التقييم غير موجود.',
+    'review.booking_not_completed' => 'يمكنك تقييم الحجوزات المكتملة فقط.',
+    'review.already_exists' => 'لقد قمت بإرسال تقييم لهذا الحجز بالفعل.',
+
+    // Question messages
+    'question.created' => 'تم إرسال السؤال بنجاح.',
+    'question.answered' => 'تم الرد على السؤال بنجاح.',
+
+    // Favorite messages
+    'favorite.added' => 'تمت إضافة الجولة إلى المفضلة.',
+    'favorite.removed' => 'تمت إزالة الجولة من المفضلة.',
 ];

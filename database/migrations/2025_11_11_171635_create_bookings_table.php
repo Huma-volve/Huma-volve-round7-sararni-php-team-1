@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+
+            // User
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
 
@@ -54,14 +56,20 @@ return new class extends Migration
             $table->enum('cancelled_by', ['user', 'admin', 'system'])->nullable();
 
 
+
             // For flights only
             $table->time('departure_time')->nullable();
             $table->time('arrival_time')->nullable();
             $table->enum('trip_type', ['one_way','round_trip','multi_city']);
             
 
+
             $table->timestamps();
             $table->softDeletes();
+
+            // Indexes
+            $table->index(['user_id', 'category', 'status', 'booking_date']);
+            $table->index('item_id');
         });
     }
 

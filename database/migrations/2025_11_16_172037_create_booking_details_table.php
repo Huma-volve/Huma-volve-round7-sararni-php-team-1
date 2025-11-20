@@ -18,10 +18,10 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->json('meta')->comment('Flexible data in JSON format');
 
-            
-            
-            $table->index('booking_id');
             $table->timestamps();
+
+            $table->index('booking_id');
+
         });
     }
 

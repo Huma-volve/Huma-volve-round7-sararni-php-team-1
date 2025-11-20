@@ -3,19 +3,39 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+
+
 class Flight extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
+
 
     protected $fillable = [
         'flight_number',
         'carrier_id',
-        'aircraft_id'
+
+        'aircraft_id',
+        'destination_id',
+        'origin_id',
+        'arrival_time',
+        'departure_time',
+        'duration_minutes',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'arrival_time' => 'datetime',
+            'departure_time' => 'datetime',
+        ];
+    }
+
 
     public function carrier(): BelongsTo
     {

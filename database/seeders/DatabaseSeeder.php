@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Database\Seeders\FlightSeatSeeder;
@@ -32,6 +31,7 @@ class DatabaseSeeder extends Seeder
             FlightLegSeeder::class,
             FlightClassSeeder::class,
             FlightSeatSeeder::class,
+
             HotelSeeder::class,
             TourSeeder::class,
             BookingSeeder::class,
@@ -39,9 +39,11 @@ class DatabaseSeeder extends Seeder
             ReviewSeeder::class,
             FavoriteSeeder::class,
             QuestionSeeder::class,
+
             
             
           
+
 
         ]);
     }

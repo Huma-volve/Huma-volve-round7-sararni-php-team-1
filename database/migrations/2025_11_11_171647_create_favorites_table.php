@@ -12,11 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('favorites', function (Blueprint $table) {
-             $table->id();
-            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
-            $table->integer('item_id');
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->enum('category', ['tour', 'hotel', 'car', 'flight'])->index();
+            $table->unsignedBigInteger('item_id')->comment('ID of tour/hotel/car/flight');
             $table->timestamps();
-            $table->softDeletes();
+
+            $table->unique(['user_id', 'category', 'item_id']);
+            $table->index('user_id');
+            $table->index('category');
+            $table->index('item_id');
+            $table->index(['user_id', 'category']);
         });
     }
 

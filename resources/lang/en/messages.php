@@ -40,4 +40,36 @@ return [
     'error.oauth_error' => 'OAuth authentication failed.',
     'error.link_error' => 'Failed to link account.',
     'error.unlink_error' => 'Failed to unlink account.',
+    'error.unauthorized' => 'This action is unauthorized. Only admins and support staff can perform this action.',
+
+    // Booking messages
+    'booking.created' => 'Booking created successfully.',
+    'booking.confirmed' => 'Booking confirmed successfully.',
+    'booking.cancelled' => 'Booking cancelled successfully.',
+    'booking.not_found' => 'Booking not found.',
+    'booking.tour_not_active' => 'This tour is not currently active.',
+    'booking.min_participants' => 'Minimum :min participants required.',
+    'booking.max_participants' => 'Maximum :max participants allowed.',
+    'booking.date_not_available' => 'Selected date is not available.',
+    'booking.insufficient_slots' => 'Insufficient slots available. Available: :available, Required: :required.',
+    'booking.available' => 'Tour is available for the selected date.',
+    'booking.booking_failed' => 'Booking failed. Please try again.',
+    'booking.invalid_status' => 'Invalid booking status.',
+    'booking.cannot_cancel' => 'This booking cannot be cancelled.',
+
+    // Review messages
+    'review.created' => 'Review submitted successfully. It will be published after moderation.',
+    'review.updated' => 'Review updated successfully.',
+    'review.deleted' => 'Review deleted successfully.',
+    'review.not_found' => 'Review not found.',
+    'review.booking_not_completed' => 'You can only review completed bookings.',
+    'review.already_exists' => 'You have already submitted a review for this booking.',
+
+    // Question messages
+    'question.created' => 'Question submitted successfully.',
+    'question.answered' => 'Question answered successfully.',
+
+    // Favorite messages
+    'favorite.added' => 'Tour added to favorites.',
+    'favorite.removed' => 'Tour removed from favorites.',
 ];
