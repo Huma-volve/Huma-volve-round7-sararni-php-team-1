@@ -17,6 +17,7 @@ return new class extends Migration
             // User
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
+
             // Booking Reference
             $table->string('booking_reference', 50)->unique();
 
@@ -53,6 +54,15 @@ return new class extends Migration
             $table->text('cancellation_reason')->nullable();
             $table->timestamp('cancelled_at')->nullable();
             $table->enum('cancelled_by', ['user', 'admin', 'system'])->nullable();
+
+
+
+            // For flights only
+            $table->time('departure_time')->nullable();
+            $table->time('arrival_time')->nullable();
+            $table->enum('trip_type', ['one_way','round_trip','multi_city']);
+            
+
 
             $table->timestamps();
             $table->softDeletes();
