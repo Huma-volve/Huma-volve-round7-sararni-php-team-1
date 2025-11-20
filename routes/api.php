@@ -1,6 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AuthController;
 use Illuminate\Support\Facades\Route;
+
+// Google OAuth callback (direct route without v1 prefix)
+Route::get('/google/callback', [AuthController::class, 'googleCallback']);
+
+// Google login direct route
+Route::post('/v1/google-login', [AuthController::class, 'googleLogin']);
 
 Route::prefix('v1')->group(function () {
     // Auth routes
