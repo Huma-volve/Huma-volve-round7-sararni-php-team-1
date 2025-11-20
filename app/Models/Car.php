@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Car extends Model
 {
-    //
+    
     protected $fillable = [
         'brand_id', 'model', 'category', 'make', 'seats_count', 'doors',
         'fuel_type', 'transmission', 'luggage_capacity', 'air_conditioning',
         'features', 'pickup_location_id', 'dropoff_location_id', 'license_requirements',
         'availability_calendar', 'cancellation_policy', 'created_by', 'updated_by',
     ];
+
 
     public function brand()
     {
@@ -25,15 +26,22 @@ class Car extends Model
         return $this->belongsTo(Location::class, 'pickup_location_id');
     }
 
-    public function dropoff_location_id()
+    public function dropoffLocation()
     {
         return $this->belongsTo(Location::class, 'dropoff_location_id');
     }
 
-    public function priceTiers()
-    {
-        return $this->hasMany(CarPriceTier::class);
+
+    public function priceTiers() {
+            return $this->hasMany(CarPriceTier::class, 'car_id', 'id');
     }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('car_images')
+            ->useDisk('public');
+    }
+
 
     public function bookings(): HasMany
     {

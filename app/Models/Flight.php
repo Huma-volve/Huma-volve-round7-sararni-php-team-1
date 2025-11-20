@@ -2,20 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+
 
 class Flight extends Model
 {
-    use HasFactory;
     use SoftDeletes;
+
 
     protected $fillable = [
         'flight_number',
         'carrier_id',
+
         'aircraft_id',
         'destination_id',
         'origin_id',
@@ -32,6 +36,7 @@ class Flight extends Model
         ];
     }
 
+
     public function carrier(): BelongsTo
     {
         return $this->belongsTo(Carrier::class);
@@ -42,25 +47,24 @@ class Flight extends Model
         return $this->belongsTo(Aircraft::class);
     }
 
-    public function destination(): BelongsTo
+    public function flightClasses(): HasMany
     {
-        return $this->belongsTo(Location::class, 'destination_id');
+        return $this->hasMany(FlightClass::class);
     }
 
-    public function origin(): BelongsTo
+    public function flightLegs(): HasMany
     {
-        return $this->belongsTo(Location::class, 'origin_id');
+        return $this->hasMany(FlightLeg::class);
     }
 
-    public function bookings(): HasMany
+    public function flightSeats(): HasMany
     {
-        return $this->hasMany(Booking::class, 'item_id')
-            ->where('category', 'flight');
+        return $this->hasMany(FlightSeat::class);
     }
 
-    public function favorites(): HasMany
+    public function bookingFlights(): HasMany
     {
-        return $this->hasMany(Favorite::class, 'item_id')
-            ->where('category', 'flight');
+        return $this->hasMany(BookingFlight::class);
     }
 }
+

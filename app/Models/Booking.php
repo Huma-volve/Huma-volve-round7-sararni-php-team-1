@@ -208,4 +208,8 @@ class Booking extends Model
             }
         });
     }
+    public function flight()
+    {
+        return $this->belongsTo(Flight::class);
+    }
 }

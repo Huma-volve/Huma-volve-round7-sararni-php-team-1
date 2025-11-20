@@ -2,16 +2,22 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Carrier;
 use Illuminate\Database\Seeder;
 
 class CarrierSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        $carriers = [
+            ['carrier_name' => 'EgyptAir', 'code' => 'MS'],
+            ['carrier_name' => 'Emirates', 'code' => 'EK'],
+            ['carrier_name' => 'British Airways', 'code' => 'BA'],
+            ['carrier_name' => 'Lufthansa', 'code' => 'LH']
+        ];
+
+        foreach ($carriers as $carrier) {
+            Carrier::create($carrier);
+        }
     }
 }
