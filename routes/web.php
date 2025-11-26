@@ -6,6 +6,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/test/google-auth', function () {
+    return view('test-google-auth');
+})->name('test.google.auth');
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

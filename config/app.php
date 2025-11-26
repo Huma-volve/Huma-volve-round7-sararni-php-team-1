@@ -123,4 +123,28 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Tour Image
+    |--------------------------------------------------------------------------
+    |
+    | This is the default image path for tours that don't have a main image.
+    | The path should be relative to the public directory.
+    | If the file doesn't exist, a placeholder service will be used.
+    |
+    */
+
+    'default_tour_image' => env('DEFAULT_TOUR_IMAGE', 'images/default-tour.jpg'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Currency
+    |--------------------------------------------------------------------------
+    |
+    | Default currency code for pricing.
+    |
+    */
+
+    'currency' => env('APP_CURRENCY', 'USD'),
+
 ];

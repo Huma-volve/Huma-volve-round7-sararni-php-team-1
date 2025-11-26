@@ -10,6 +10,7 @@ use App\Http\Resources\Api\V1\TourResource;
 use App\Models\Tour;
 use App\Services\TourService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class TourController extends Controller
 {
@@ -22,6 +23,21 @@ class TourController extends Controller
         $query = Tour::query()
             ->with(['category', 'media'])
             ->active();
+
+        // Eager load user's favorites if authenticated to avoid N+1 queries
+        if ($request->user()) {
+            $userFavorites = \App\Models\Favorite::where('user_id', $request->user()->id)
+                ->where('category', 'tour')
+                ->pluck('item_id')
+                ->toArray();
+
+            // Add user favorites as a custom attribute to avoid N+1
+            $query->withCount([
+                'favorites as is_user_favorited' => function ($q) use ($request) {
+                    $q->where('user_id', $request->user()->id);
+                },
+            ]);
+        }
 
         if ($request->filled('category_id')) {
             $query->byCategory($request->category_id);
@@ -83,7 +99,7 @@ class TourController extends Controller
         return $this->paginatedResponse($tours);
     }
 
-    public function show(int $id): JsonResponse
+    public function show(int $id, Request $request): JsonResponse
     {
         $tour = Tour::with([
             'category',
@@ -103,6 +119,15 @@ class TourController extends Controller
             },
         ])->findOrFail($id);
 
+        // Eager load user's favorite status if authenticated
+        if ($request->user()) {
+            $tour->loadCount([
+                'favorites as is_user_favorited' => function ($q) use ($request) {
+                    $q->where('user_id', $request->user()->id);
+                },
+            ]);
+        }
+
         // Get similar tours
         $similarTours = $this->tourService->getSimilarTours($tour, 6);
         $tour->setRelation('similarTours', $similarTours);
@@ -110,21 +135,45 @@ class TourController extends Controller
         return $this->successResponse(new TourDetailResource($tour));
     }
 
-    public function similar(int $id): JsonResponse
+    public function similar(int $id, Request $request): JsonResponse
     {
         $tour = Tour::findOrFail($id);
         $similarTours = $this->tourService->getSimilarTours($tour, 6);
 
+        // Eager load user's favorites if authenticated
+        if ($request->user() && $similarTours->isNotEmpty()) {
+            $tourIds = $similarTours->pluck('id')->toArray();
+            $favorites = \App\Models\Favorite::where('user_id', $request->user()->id)
+                ->where('category', 'tour')
+                ->whereIn('item_id', $tourIds)
+                ->pluck('item_id')
+                ->toArray();
+
+            $similarTours->each(function ($tour) use ($favorites) {
+                $tour->is_user_favorited = in_array($tour->id, $favorites) ? 1 : 0;
+            });
+        }
+
         return $this->successResponse(TourResource::collection($similarTours));
     }
 
-    public function featured(): JsonResponse
+    public function featured(Request $request): JsonResponse
     {
-        $tours = Tour::query()
+        $query = Tour::query()
             ->with(['category', 'media'])
             ->active()
-            ->featured()
-            ->orderBy('sort_order')
+            ->featured();
+
+        // Eager load user's favorites if authenticated
+        if ($request->user()) {
+            $query->withCount([
+                'favorites as is_user_favorited' => function ($q) use ($request) {
+                    $q->where('user_id', $request->user()->id);
+                },
+            ]);
+        }
+
+        $tours = $query->orderBy('sort_order')
             ->orderBy('rating', 'desc')
             ->limit(10)
             ->get();
@@ -149,6 +198,20 @@ class TourController extends Controller
         ]);
 
         $tours = $this->tourService->searchTours($request->q, $filters);
+
+        // Eager load user's favorites if authenticated
+        if ($request->user() && $tours->isNotEmpty()) {
+            $tourIds = $tours->pluck('id')->toArray();
+            $favorites = \App\Models\Favorite::where('user_id', $request->user()->id)
+                ->where('category', 'tour')
+                ->whereIn('item_id', $tourIds)
+                ->pluck('item_id')
+                ->toArray();
+
+            $tours->each(function ($tour) use ($favorites) {
+                $tour->is_user_favorited = in_array($tour->id, $favorites) ? 1 : 0;
+            });
+        }
 
         $pageSize = $request->input('page_size', 20);
         $page = $request->input('page', 1);

@@ -38,6 +38,19 @@ class SearchController extends Controller
             'stars',
             'brand_id',
             'location_id',
+            // Flight filters
+            'origin_id',
+            'destination_id',
+            'departure_date',
+            'return_date',
+            'carrier_id',
+            'class_id',
+            // Hotel filters
+            'check_in',
+            'check_out',
+            // Car filters
+            'pickup_date',
+            'dropoff_date',
         ]);
 
         $results = $this->searchService->search($request->q, $filters, $types, $perPage);
@@ -89,9 +102,13 @@ class SearchController extends Controller
      */
     public function nearby(SearchRequest $request): JsonResponse
     {
+        // Validate only location for nearby search (q is not required)
         $request->validate([
             'location_lat' => ['required', 'numeric'],
             'location_lng' => ['required', 'numeric'],
+        ], [], [
+            'location_lat' => 'location latitude',
+            'location_lng' => 'location longitude',
         ]);
 
         $types = $request->input('types', ['tours', 'hotels']);
