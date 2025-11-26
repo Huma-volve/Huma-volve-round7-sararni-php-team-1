@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('flights', function (Blueprint $table) {
             $table->id();
 
-            $table->integer('flight_number');
+            $table->string('flight_number');
             $table->foreignId('carrier_id')->constrained()->onDelete('cascade');
             $table->foreignId('aircraft_id')->nullable()->constrained('aircrafts')->onDelete('set null');
             $table->foreignId('destination_id')->constrained('locations')->onDelete('cascade');

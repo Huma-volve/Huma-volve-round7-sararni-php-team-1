@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [TourController::class, 'index']);
 Route::get('/featured', [TourController::class, 'featured']);
 Route::get('/search', [TourController::class, 'search']);
+Route::post('/compare', [TourController::class, 'compare']);
 Route::get('/{id}', [TourController::class, 'show']);
 Route::get('/{id}/similar', [TourController::class, 'similar']);
 
