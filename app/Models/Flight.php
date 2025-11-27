@@ -3,18 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Flight extends Model
 {
     use SoftDeletes;
-
 
     protected $fillable = [
         'flight_number',
@@ -35,7 +30,6 @@ class Flight extends Model
             'departure_time' => 'datetime',
         ];
     }
-
 
     public function carrier(): BelongsTo
     {
@@ -66,5 +60,14 @@ class Flight extends Model
     {
         return $this->hasMany(BookingFlight::class);
     }
-}
 
+    public function origin(): BelongsTo
+    {
+        return $this->belongsTo(Airport::class, 'origin_id');
+    }
+
+    public function destination(): BelongsTo
+    {
+        return $this->belongsTo(Airport::class, 'destination_id');
+    }
+}
