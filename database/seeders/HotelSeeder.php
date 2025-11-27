@@ -30,6 +30,8 @@ class HotelSeeder extends Seeder
                     'cancellation' => 'Free cancellation within 24 hours'
                 ]),
                 'location_id' => $i, // لازم تتأكد إن عندك location_id = 1 في جدول locations
+                'location_lat' => 30.123456,
+                'location_lng' => 50.789012,
                 'stars' => rand(3, 5),
                 'rooms_count' => rand(50, 200),
                 'recommended' => json_encode(['families', 'business', 'couples']),

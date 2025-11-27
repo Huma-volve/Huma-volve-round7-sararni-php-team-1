@@ -21,6 +21,8 @@ class Hotel extends Model
         'contact_info',
         'policies',
         'location_id',
+        'location_lat',
+        'location_lng',
         'stars',
         'rooms_count',
         'recommended',

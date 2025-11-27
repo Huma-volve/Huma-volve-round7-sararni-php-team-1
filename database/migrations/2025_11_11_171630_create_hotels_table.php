@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('contact_info');
             $table->json('policies');
             $table->foreignId('location_id')->constrained('locations')->onDelete('cascade');
+            $table->decimal('location_lat', 10, 8)->nullable();
+            $table->decimal('location_lng', 11, 8)->nullable();
             $table->tinyInteger('stars')->nullable();
             $table->integer('rooms_count')->nullable();
             $table->json('recommended')->nullable();
@@ -30,7 +32,7 @@ return new class extends Migration
 
            $table->index('category_id');
            $table->index('name');
-       
+            $table->index(['location_lat', 'location_lng']);
 
         });
     }

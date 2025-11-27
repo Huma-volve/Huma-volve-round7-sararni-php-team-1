@@ -20,7 +20,7 @@ class SearchController extends Controller
      */
     public function search(SearchRequest $request): JsonResponse
     {
-        $types = $request->input('types', ['tours']); // Default to tours only
+        $types = $request->input('types', ['tours' , 'hotels'] ); // Default to tours only
         $perPage = $request->input('page_size', 20);
 
         $filters = $request->only([
@@ -67,6 +67,8 @@ class SearchController extends Controller
      */
     public function quickSearch(SearchRequest $request): JsonResponse
     {
+
+        
         $lat = $request->input('location_lat');
         $lng = $request->input('location_lng');
         $radius = $request->input('radius', 50);

@@ -28,6 +28,8 @@ class HotelResource extends JsonResource
                                     'city' => $this->location->city ?? null,
                                       ];
                                  }) ,
+                                 'location_lat' => $this->location_lat,
+                                 'location_lng' => $this->location_lng,
             'stars'        => $this->stars,
             'rooms_count'  => $this->rooms_count,
             'recommended'  => json_decode($this->recommended, true),
