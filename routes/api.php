@@ -63,9 +63,9 @@ Route::prefix('v1')->group(function () {
 
 Route::controller(PaymentController::class)->prefix('payments')->group(function () {
 
-Route::post('/paypal/create', 'createPayment');
-Route::get('/paypal/success','paymentSuccess')->name('payment.success');
-Route::get('/paypal/cancel','cancel')->name('payment.cancel');
+Route::post('/create', 'createPayment');
+Route::get('/success','paymentSuccess')->name('payment.success');
+Route::get('/cancel','cancel')->name('payment.cancel');
 // Route::post('/paypal/webhook', [PaymentController::class, 'webhook']);
 });
 

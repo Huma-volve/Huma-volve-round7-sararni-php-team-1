@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Search\SearchRequest;
 use App\Http\Resources\Api\V1\TourResource;
+use App\Http\Resources\HotelResource;
 use App\Services\SearchService;
 use Illuminate\Http\JsonResponse;
 
@@ -125,7 +126,7 @@ class SearchController extends Controller
         return match ($type) {
             'tours' => TourResource::collection(collect($items))->resolve(),
             // TODO: إضافة Resources للأنواع الأخرى
-            // 'hotels' => HotelResource::collection(collect($items))->resolve(),
+            'hotels' => HotelResource::collection(collect($items))->resolve(),
             // 'cars' => CarResource::collection(collect($items))->resolve(),
             // 'flights' => FlightResource::collection(collect($items))->resolve(),
             default => $items,

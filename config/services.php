@@ -42,11 +42,7 @@ return [
     ],
 
 
-    // 'stripe' => [
-    //     'secret' => env('STRIPE_SECRET', 'sk_test_51SUBq8CYU4myMPHfcCnwu6s3vuDviVNIaKWphnPJtSadK79YGcHF9Og7WEcNr4gi1majTNOFQyMcCrhFhhdbvQ2E00QlxHfSPK'),
-    //     'base_url' => env('SECRIT_BASE_URL', 'https://api.stripe.com'),
-    // ],
-    
+ 
 'stripe' => [
     'secret' => env('STRIPE_SECRET'),
     'base_url' => env('STRIPE_BASE_URL', 'https://api.stripe.com'),
