@@ -2,22 +2,27 @@
 
 namespace App\Http\Resources\Api\V1;
 
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TourDetailResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
-        $isFavorited = false;
-
-        // Check if is_user_favorited count is already loaded (from withCount)
-        if (isset($this->resource->is_user_favorited)) {
-            $isFavorited = (bool) $this->resource->is_user_favorited;
-        } elseif ($request->user()) {
-            // Fallback: check if tour is in user's favorites
-            $isFavorited = $this->favorites()->where('user_id', $request->user()->id)->exists();
-        }
+        // Get user from request - try multiple methods
+        // In Laravel, when JsonResource is used, the request is automatically passed
+        // But in some cases (like tests), we need to use request() helper or auth()
+        $user = $request->user() 
+            ?? request()->user() 
+            ?? auth()->user();
+        
+        $isFavorited = $user ? $this->isFavorited($request, $user) : false;
 
         return [
             'id' => $this->id,
@@ -103,6 +108,24 @@ class TourDetailResource extends JsonResource
                     });
             }),
         ];
+    }
+
+    /**
+     * Check if the tour is favorited by the authenticated user
+     */
+    protected function isFavorited(Request $request, $user): bool
+    {
+        // Check if is_user_favorited count is already loaded (from withCount)
+        if (isset($this->resource->is_user_favorited)) {
+            return (bool) $this->resource->is_user_favorited;
+        }
+
+        // Fallback: check if tour is in user's favorites using Favorite model directly
+        // This is more reliable than using the relationship
+        return Favorite::where('user_id', $user->id)
+            ->where('category', 'tour')
+            ->where('item_id', $this->id)
+            ->exists();
     }
 
     /**

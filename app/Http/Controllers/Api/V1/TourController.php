@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Tour\AvailableTourRequest;
 use App\Http\Requests\Api\V1\Tour\CompareTourRequest;
 use App\Http\Requests\Api\V1\Tour\IndexTourRequest;
+use App\Http\Requests\Api\V1\Tour\RecommendTourRequest;
 use App\Http\Requests\Api\V1\Tour\SearchTourRequest;
 use App\Http\Resources\Api\V1\TourCompareResource;
 use App\Http\Resources\Api\V1\TourDetailResource;
@@ -123,9 +125,10 @@ class TourController extends Controller
 
         // Eager load user's favorite status if authenticated
         if ($request->user()) {
+            $userId = $request->user()->id;
             $tour->loadCount([
-                'favorites as is_user_favorited' => function ($q) use ($request) {
-                    $q->where('user_id', $request->user()->id);
+                'favorites as is_user_favorited' => function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
                 },
             ]);
         }
@@ -134,6 +137,7 @@ class TourController extends Controller
         $similarTours = $this->tourService->getSimilarTours($tour, 6);
         $tour->setRelation('similarTours', $similarTours);
 
+        // Create resource and let Laravel handle request passing automatically
         return $this->successResponse(new TourDetailResource($tour));
     }
 
@@ -267,5 +271,56 @@ class TourController extends Controller
             TourCompareResource::collection($tours),
             'Tours compared successfully'
         );
+    }
+
+    public function recommendations(RecommendTourRequest $request): JsonResponse
+    {
+        $filters = $request->only([
+            'category_id',
+            'featured',
+            'price_min',
+            'price_max',
+            'difficulty',
+            'languages',
+            'tags',
+            'location_lat',
+            'location_lng',
+            'radius',
+        ]);
+
+        $limit = $request->input('limit', 6);
+
+        $tours = $this->tourService->getRecommendedTours(
+            $filters,
+            $request->user(),
+            $limit
+        );
+
+        return $this->successResponse(TourResource::collection($tours));
+    }
+
+    public function available(AvailableTourRequest $request): JsonResponse
+    {
+        $filters = $request->only([
+            'category_id',
+            'price_min',
+            'price_max',
+            'difficulty',
+            'languages',
+            'tags',
+            'location_lat',
+            'location_lng',
+            'radius',
+        ]);
+
+        $limit = $request->input('limit', 20);
+
+        $tours = $this->tourService->getAvailableTours(
+            $request->date,
+            $filters,
+            $limit
+        );
+
+        return $this->successResponse(TourResource::collection($tours));
     }
 }
