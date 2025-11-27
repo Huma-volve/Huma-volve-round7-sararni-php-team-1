@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Tour\CompareTourRequest;
 use App\Http\Requests\Api\V1\Tour\IndexTourRequest;
 use App\Http\Requests\Api\V1\Tour\SearchTourRequest;
+use App\Http\Resources\Api\V1\TourCompareResource;
 use App\Http\Resources\Api\V1\TourDetailResource;
 use App\Http\Resources\Api\V1\TourResource;
 use App\Models\Tour;
@@ -232,5 +234,38 @@ class TourController extends Controller
             'X-Total' => (string) $total,
             'X-Last-Page' => (string) $lastPage,
         ]);
+    }
+
+    public function compare(CompareTourRequest $request): JsonResponse
+    {
+        $tourIds = $request->tour_ids;
+        $date = $request->date;
+
+        // Load tours with necessary relationships
+        $tours = Tour::with([
+            'availability' => function ($query) use ($date) {
+                if ($date) {
+                    $query->where('date', $date);
+                }
+                $query->where('is_active', true);
+            },
+            'media',
+        ])
+            ->whereIn('id', $tourIds)
+            ->active()
+            ->get();
+
+        // Sort tours by the order of tour_ids in request
+        $tours = $tours->sortBy(function ($tour) use ($tourIds) {
+            return array_search($tour->id, $tourIds);
+        })->values();
+
+        // Pass date to resource for availability checking
+        $request->merge(['date' => $date]);
+
+        return $this->successResponse(
+            TourCompareResource::collection($tours),
+            'Tours compared successfully'
+        );
     }
 }

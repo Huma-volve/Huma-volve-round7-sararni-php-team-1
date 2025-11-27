@@ -23,7 +23,7 @@ class CarSeeder extends Seeder
         $locations = Location::all()->pluck('id')->toArray();
         $users = User::all()->pluck('id')->toArray();
 
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 50; $i++) {
             DB::table('cars')->insert([
                 'brand_id' => $faker->randomElement($brands),
                 'model' => $faker->word(),

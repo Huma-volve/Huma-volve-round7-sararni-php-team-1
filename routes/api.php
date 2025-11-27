@@ -56,8 +56,12 @@ Route::prefix('v1')->group(function () {
     });
     //  Car routes
     Route::prefix('cars')->group(function () {
-        require __DIR__.'/api/v1/cars.php';
+require __DIR__.'/api/v1/cars.php';
     });
+
+    // Compare routes (unified for all categories)
+    Route::get('/compare/search', [\App\Http\Controllers\Api\V1\CompareController::class, 'search']);
+    Route::post('/compare', [\App\Http\Controllers\Api\V1\CompareController::class, 'compare']);
 });
 Route::middleware('auth:sanctum')->group(function () {
     // flights
