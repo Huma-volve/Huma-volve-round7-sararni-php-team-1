@@ -7,6 +7,7 @@ use App\Http\Requests\StoreBookingRequest;
 use App\Http\Resources\BookingResource;
 use App\Http\Traits\ApiResponseTrait;
 use App\Models\Booking;
+use App\Models\Category;
 use App\Models\Hotel;
 use App\Models\RatePlan;
 use App\Models\Room;
@@ -36,6 +37,7 @@ use Illuminate\Support\Facades\Auth;
     //    dd(  $validated);
 
      $hotel = Hotel::findOrFail($validated['hotel_id']);
+    //  $category = Category::where('slug', 'hotels')->first();
 
         // 1) check occupancy
      $roomOccupancy = $this->serviceBooking->validateOccupancy($validated['room_id'], $validated['adults'], $validated['children'], $validated['infants']);
@@ -49,18 +51,18 @@ use Illuminate\Support\Facades\Auth;
 
         // 4) create booking
         $booking = $this->serviceBooking->createBooking([
-            'user_id'       =>2,
-            'category_id'   => 'hotel',
-            'item_id'        => $hotel->id,
-            'currency' => config('app.currency', 'USD'),
-            'room_id'       => (int)  $validated['room_id'],
-            'rate_plan_id'  => $validated['rate_plan_id'],
-            'check_in_date'    => $validated['check_in_date'],
-            'check_out_date'      => $validated['check_out_date'],
-            'booking_date'     => now(),
-            'total_price'   => $total,
-            'status'        => 'pending',
-            'payment_status' => 'pending',
+                'user_id'          =>2,
+                'category'          => 'hotel',
+                'item_id'          => $hotel->id,
+                'room_id'          => (int)  $validated['room_id'],
+                'rate_plan_id'     => $validated['rate_plan_id'],
+                'currency'         => config('app.currency', 'USD'),
+                'check_in_date'    => $validated['check_in_date'],
+                'check_out_date'   => $validated['check_out_date'],
+                'booking_date'     => now(),
+                'total_price'      => $total,
+                'status'           => 'pending',
+                'payment_status'   => 'pending',
         ]);
             // dd($booking);
 
@@ -69,45 +71,28 @@ use Illuminate\Support\Facades\Auth;
                  'adults_count' => $validated['adults'],
                  'children_count' => $validated['children'] ?? 0,
                  'infants_count' => $validated['infants'] ?? 0,
+
+
              ]
         ]);
 
         return $this->successResponse(new BookingResource($booking), 'Booking created successfully');
     }
 
-    public function confirm($id)
-    {
-       try{
-                $booking = $this->serviceBooking->confirmBooking($id);
 
-                if(!$booking){
-                    return $this->errorResponse('Booking Not Found' , 404);
-                }
 
-        return  $this->successResponse(new BookingResource($booking ));
 
-       }catch(\Exception $e){
-           return $this->errorResponse($e->getMessage(), 500);
-       }
-    }
+// public function cancelBooking(Request $request, $id)
+// {
+//     $booking = Booking::findOrFail($id);
+//     $booking->cancel($request->reason, auth()->user()->role ?? 'user');
 
-    public function cancel($id)
-    {
-        try{
-
-            $booking = $this->serviceBooking->cancelBooking($id);
-
-            if(!$booking){
-                return $this->errorResponse('Booking Not Found' , 404);
-            }
-
-        return  $this->successResponse(new BookingResource($booking ));
-
-        }catch(\Exception $e){
-            return $this->errorResponse($e->getMessage(), 500);
-        }
-    }
-
+//     return response()->json([
+//         'success' => true,
+//         'message' => 'Booking cancelled successfully',
+//         'booking' => $booking
+//     ]);
+// }
 
 
 

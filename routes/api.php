@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\CarController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\StripePaymentController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\BrandController;
@@ -60,14 +61,12 @@ Route::prefix('v1')->group(function () {
 
 
 
+Route::controller(PaymentController::class)->prefix('payments')->group(function () {
 
-Route::prefix('payments')->group(function () {
-    Route::post('/create-intent', [PaymentController::class, 'createPaymentIntent']);
-
-     Route::get('/confirm', [PaymentController::class, 'confirmPayment']);
-     Route::get('/cancel', [PaymentController::class, 'cancelPayment']);
-
-    // Route::get('/{paymentIntentId}', [PaymentController::class, 'getPayment']);
+Route::post('/paypal/create', 'createPayment');
+Route::get('/paypal/success','paymentSuccess')->name('payment.success');
+Route::get('/paypal/cancel','cancel')->name('payment.cancel');
+// Route::post('/paypal/webhook', [PaymentController::class, 'webhook']);
 });
 
 require __DIR__ . '/Api/hotel.php';

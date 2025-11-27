@@ -200,7 +200,7 @@ class Booking extends Model
     {
         $year = now()->format('Y');
         $random = Str::upper(Str::random(6));
-        $prefix = match ($this->category ?? 'tour') {
+        $prefix = match ($this->category ?? 'hotel') {
             'tour' => 'TOUR',
             'hotel' => 'HOTEL',
             'car' => 'CAR',

@@ -4,6 +4,7 @@ namespace App\Services\Booking;
 
 use App\Http\Traits\ApiResponseTrait;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Models\Room;
 use Carbon\Carbon;
 
@@ -57,37 +58,6 @@ class BookingService  {
         // dd($data);
              return Booking::create($data);
     }
-
-
-        public function confirmBooking( $bookingId)
-    {
-
-        $booking = Booking::find($bookingId);
-
-       if (!$booking) return null;
-
-        $booking->update([
-         'status' => Booking::STATUS_CONFIRMED ,
-         'payment_status' => 'paid',
-         'payment_method' => 'cash',
-        ]);
-        return $booking;
-
-    }
-
-
-        public function cancelBooking($id)
-    {
-
-        $booking = Booking::find($id);
-
-       if (!$booking) return null;
-        $booking->update(['status' => Booking::STATUS_CANCELLED]);
-
-        return $booking;
-    }
-
-
 
 
 

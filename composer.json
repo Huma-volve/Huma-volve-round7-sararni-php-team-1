@@ -15,6 +15,7 @@
         "livewire/livewire": "^3.6.4",
         "spatie/laravel-medialibrary": "^11.17",
         "spatie/laravel-permission": "^6.23",
+        "srmklive/paypal": "^3.0",
         "stripe/stripe-php": "^18.2"
     },
     "require-dev": {
