@@ -1,12 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\Api\CarController;
 use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\FlightController;
-
+use Illuminate\Support\Facades\Route;
 
 // Google OAuth callback (direct route without v1 prefix)
 Route::get('/google/callback', [AuthController::class, 'googleCallback']);
@@ -56,7 +52,7 @@ Route::prefix('v1')->group(function () {
     });
     //  Car routes
     Route::prefix('cars')->group(function () {
-require __DIR__.'/api/v1/cars.php';
+        require __DIR__.'/api/v1/cars.php';
     });
 
     // Compare routes (unified for all categories)
@@ -65,10 +61,10 @@ require __DIR__.'/api/v1/cars.php';
 });
 Route::middleware('auth:sanctum')->group(function () {
     // flights
-    Route::get('/flights', [FlightController::class, 'index']);   //show all flights
-    Route::get('/flights/{id}', [FlightController::class, 'show']);       //show one flight
-    Route::post('/flights/search', [FlightController::class, 'search']);  //search for flights
-    Route::get('/{flightId}/seats', [FlightController::class, 'seatAvailability']); //flight seats
+    Route::get('/flights', [FlightController::class, 'index']);   // show all flights
+    Route::get('/flights/{id}', [FlightController::class, 'show']);       // show one flight
+    Route::post('/flights/search', [FlightController::class, 'search']);  // search for flights
+    Route::get('/{flightId}/seats', [FlightController::class, 'seatAvailability']); // flight seats
     // Route::apiResource('bookings', BookingController::class);
     // Route::post('bookings/{booking}/confirm', [BookingController::class, 'confirmBooking']);
     // Route::post('bookings/{booking}/cancel', [BookingController::class, 'cancelBooking']);
