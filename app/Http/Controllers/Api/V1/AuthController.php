@@ -23,7 +23,7 @@ class AuthController extends Controller
 {
     public function __construct(
         protected OtpService $otpService,
-        protected GoogleOAuthService $googleOAuthService
+        // protected GoogleOAuthService $googleOAuthService
     ) {}
 
     public function register(RegisterRequest $request): JsonResponse

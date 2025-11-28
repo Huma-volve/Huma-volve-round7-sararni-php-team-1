@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('flight_id')->constrained()->onDelete('cascade');
             $table->foreignId('class_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('flight_leg_id')->nullable()->constrained('flight_legs')->onDelete('cascade');
             $table->string('seat_number');
             $table->enum('status', ['available', 'reserved', 'blocked'])->default('available');
             $table->decimal('price', 10, 2)->nullable();
