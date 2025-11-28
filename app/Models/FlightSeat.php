@@ -14,6 +14,7 @@ class FlightSeat extends Model
     protected $fillable = [
         'flight_id',
         'class_id',
+        'flight_leg_id',
         'seat_number',
         'status',
         'price'
@@ -36,5 +37,9 @@ class FlightSeat extends Model
     public function bookingFlights(): HasMany
     {
         return $this->hasMany(BookingFlight::class);
+    }
+    public function leg(): BelongsTo
+    {
+        return $this->belongsTo(FlightLeg::class, 'flight_leg_id');
     }
 }

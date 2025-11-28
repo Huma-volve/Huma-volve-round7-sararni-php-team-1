@@ -33,3 +33,15 @@ return new class extends Migration
         Schema::dropIfExists('booking_details');
     }
 };
+
+
+            // $table->foreignId('flight_leg_id')->nullable()->constrained()->nullOnDelete();
+
+            // $table->foreignId('flight_seat_id')->nullable()->constrained()->nullOnDelete();
+            // $table->foreignId('participant_id')->nullable()->constrained('booking_participants')->nullOnDelete();
+
+            // $table->foreignId('class_id')->nullable()->constrained()->nullOnDelete();
+
+            // $table->enum('direction', ['outbound', 'return', 'segment'])->default('segment');
+
+            // $table->decimal('price', 10, 2)->nullable();

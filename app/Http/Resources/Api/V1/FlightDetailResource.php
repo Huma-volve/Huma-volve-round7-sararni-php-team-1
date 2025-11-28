@@ -25,8 +25,8 @@ class FlightDetailResource extends JsonResource
                     'leg_number' => $leg->leg_number,
                     'origin' => $leg->originAirport->city . ' (' . $leg->originAirport->airport_code . ')',
                     'destination' => $leg->destinationAirport->city . ' (' . $leg->destinationAirport->airport_code . ')',
-                    'departure_time' => $leg->departure_time,
-                    'arrival_time' => $leg->arrival_time,
+                    'departure_time' => $leg->departure_time?->format('H:i:s'),
+                    'arrival_time' => $leg->arrival_time?->format('H:i:s'),
                     'duration_minutes' => $leg->duration_minutes
                 ];
             }),
@@ -62,11 +62,7 @@ class FlightDetailResource extends JsonResource
                         'total_seats' => $classSeats->count(),
                         'available_seats' => $classSeats->where('is_available', true)->count(),
                         'seats' => $classSeats,
-                        'price_range' => [
-                            'min' => $classSeats->min('price'),
-                            'max' => $classSeats->max('price'),
-                            'average' => $classSeats->avg('price')
-                        ]
+                        
                     ];
                 })
             ],

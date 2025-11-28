@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\Api\V1\BookingController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\BookingController;
+use App\Http\Controllers\Api\V1\FlightBookingController;
+
 
 Route::middleware('auth:sanctum')->group(function () {
     // Booking utility routes with rate limiting
@@ -17,4 +19,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/{id}/confirm', [BookingController::class, 'confirm']);
     Route::post('/{id}/cancel', [BookingController::class, 'cancel']);
 });
+
+
 
