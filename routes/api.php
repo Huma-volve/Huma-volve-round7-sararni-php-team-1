@@ -1,11 +1,15 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\Api\V1\FlightController;
-
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\CompareController;
 
 use App\Http\Controllers\Api\V1\FlightBookingController;
+
+use App\Http\Controllers\Api\V1\FlightController;
+use App\Http\Controllers\BrandController;
+use Illuminate\Support\Facades\Route;
+
+
 
 
 
@@ -76,7 +80,8 @@ Route::middleware('auth:sanctum')->prefix('flights')->group(function () {
    Route::get('show/{id}', [FlightBookingController::class, 'show']);//show specific booking details
  
 
+    Route::prefix('brands')->group(function () {
+        Route::get('/', [BrandController::class, 'index']);
+    });
+
 });
-
-
- 
