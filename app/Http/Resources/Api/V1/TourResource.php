@@ -137,9 +137,21 @@ class TourResource extends JsonResource
     /**
      * Check if the tour is favorited by the authenticated user
      */
-    protected function isFavorited(Request $request): bool
+    protected function isFavorited($request): bool
     {
-        $user = $request->user();
+        // Try to get user from request
+        $user = null;
+
+        if ($request instanceof Request) {
+            $user = $request->user();
+        } elseif (is_object($request) && method_exists($request, 'user')) {
+            $user = $request->user();
+        }
+
+        // If no user, try auth helper
+        if (! $user) {
+            $user = auth()->user();
+        }
 
         // If user is not authenticated, return false
         if (! $user) {
@@ -151,9 +163,10 @@ class TourResource extends JsonResource
             return (bool) $this->resource->is_user_favorited;
         }
 
-        // Fallback: check if tour is in user's favorites (single query)
-        return $this->resource->favorites()
-            ->where('user_id', $user->id)
+        // Fallback: check if tour is in user's favorites using Favorite model directly
+        return \App\Models\Favorite::where('user_id', $user->id)
+            ->where('category', 'tour')
+            ->where('item_id', $this->id)
             ->exists();
     }
 }
