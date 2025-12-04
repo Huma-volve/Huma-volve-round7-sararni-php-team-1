@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('flight_id')->constrained()->onDelete('cascade');
             $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
 
+
             $table->decimal('price_per_seat', 10, 2)->nullable();
             $table->integer('seats_available')->nullable();
 

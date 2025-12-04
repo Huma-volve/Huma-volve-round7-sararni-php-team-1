@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Search\SearchRequest;
 use App\Http\Resources\Api\V1\TourResource;
+use App\Http\Resources\HotelResource;
 use App\Services\SearchService;
 use Illuminate\Http\JsonResponse;
 
@@ -19,7 +20,8 @@ class SearchController extends Controller
      */
     public function search(SearchRequest $request): JsonResponse
     {
-        $types = $request->input('types', ['tours']); // Default to tours only
+        $types = $request->input('types', ['tours' , 'hotels'] ); // Default to tours only
+
         $perPage = $request->input('page_size', 20);
 
         $filters = $request->only([
@@ -79,6 +81,7 @@ class SearchController extends Controller
      */
     public function quickSearch(SearchRequest $request): JsonResponse
     {
+
         $lat = $request->input('location_lat');
         $lng = $request->input('location_lng');
         $radius = $request->input('radius', 50);
@@ -102,6 +105,7 @@ class SearchController extends Controller
      */
     public function nearby(SearchRequest $request): JsonResponse
     {
+
         // Validate only location for nearby search (q is not required)
         $request->validate([
             'location_lat' => ['required', 'numeric'],
@@ -142,6 +146,7 @@ class SearchController extends Controller
         return match ($type) {
             'tours' => TourResource::collection(collect($items))->resolve(),
             // TODO: إضافة Resources للأنواع الأخرى
+
             // 'hotels' => HotelResource::collection(collect($items))->resolve(),
             // 'cars' => CarResource::collection(collect($items))->resolve(),
             // 'flights' => FlightResource::collection(collect($items))->resolve(),

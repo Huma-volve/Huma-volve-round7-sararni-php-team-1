@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Booking;
+use App\Models\RatePlan;
+use App\Models\Room;
 use App\Models\Tour;
 use App\Models\TourAvailability;
 use App\Models\User;
@@ -91,10 +93,15 @@ class BookingSeeder extends Seeder
                     continue;
                 }
 
-                $booking = Booking::create([
+                 $room = Room::first();
+                $ratepaln = RatePlan::first();
+
+                 $booking = Booking::create([
                     'user_id' => $customer->id,
                     'category' => 'tour',
                     'item_id' => $tour->id,
+                    'room_id' => $room->id,
+                    'rate_plan_id' => $ratepaln->id,
                     'total_price' => $totalAmount,
                     'currency' => 'USD',
                     'status' => $status,

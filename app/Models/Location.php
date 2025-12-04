@@ -24,4 +24,10 @@ class Location extends Model
         return $this->hasMany(Car::class, 'dropoff_location_id');
     }
 
+
+        public function hotels()
+        {
+            return $this->hasMany(Hotel::class);
+        }
+
 }

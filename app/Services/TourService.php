@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Tour;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -10,10 +11,12 @@ class TourService
 {
     public function getSimilarTours(Tour $tour, int $limit = 6): Collection
     {
+
         $baseQuery = Tour::query()
             ->where('id', '!=', $tour->id)
             ->where('status', 'active')
             ->where('category_id', $tour->category_id);
+
 
         $similarTours = (clone $baseQuery);
         $this->applySimilarityFilters($similarTours, $tour);
@@ -42,33 +45,37 @@ class TourService
             ->where('id', '!=', $tour->id)
             ->where('status', 'active')
             ->orderBy('rating', 'desc')
-            ->orderBy('total_reviews', 'desc')
+             ->orderBy('total_reviews', 'desc')
             ->limit($limit)
             ->get();
     }
 
+
     public function getRecommendedTours(array $filters = [], $user = null, int $limit = 6): Collection
-    {
+     {
         $query = Tour::query()
             ->where('status', 'active');
 
         if ($user) {
             // TODO: Implement user-based recommendations
             // Based on booking history, favorites, preferences
-            $query->where('is_featured', true);
+
+             $query->where('is_featured', true);
         } else {
             // For guests, return featured tours with high ratings
             $query->where('is_featured', true);
         }
 
+
         $this->applyCommonFilters($query, $filters);
 
-        return $query->orderBy('is_featured', 'desc')
+         return $query->orderBy('is_featured', 'desc')
             ->orderBy('rating', 'desc')
             ->orderBy('total_bookings', 'desc')
             ->limit($limit)
             ->get();
     }
+
 
     public function getAvailableTours(string $date, array $filters = [], int $limit = 20): Collection
     {
@@ -92,7 +99,7 @@ class TourService
             ->get();
     }
 
-    public function searchTours(string $query, array $filters = []): Collection
+     public function searchTours(string $query, array $filters = []): Collection
     {
         $searchQuery = Tour::query()
             ->where('status', 'active')
@@ -122,8 +129,9 @@ class TourService
 
         if (isset($filters['date'])) {
             $searchQuery->whereHas('availability', function ($q) use ($filters) {
+
                 $q->whereDate('date', $filters['date'])
-                    ->where('is_active', true)
+                     ->where('is_active', true)
                     ->whereRaw('available_slots > booked_slots');
             });
         }
@@ -161,6 +169,7 @@ class TourService
             ->orderBy('total_reviews', 'desc')
             ->get();
     }
+
 
     protected function applyCommonFilters($query, array $filters): void
     {
@@ -234,4 +243,4 @@ class TourService
             }
         }
     }
-}
+ }

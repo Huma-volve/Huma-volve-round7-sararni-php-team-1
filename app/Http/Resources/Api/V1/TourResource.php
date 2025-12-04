@@ -14,6 +14,7 @@ class TourResource extends JsonResource
             'slug' => $this->slug,
             'name' => $this->name,
             'short_description' => $this->short_description,
+
             'main_image' => $this->getMainImageUrl(),
             'main_image_thumb' => $this->getMainImageUrl('thumb'),
             'main_image_preview' => $this->getMainImageUrl('preview'),
@@ -38,12 +39,14 @@ class TourResource extends JsonResource
             'rating' => (float) $this->rating,
             'total_reviews' => $this->total_reviews,
             'is_featured' => $this->is_featured,
+
             'is_favorited' => $this->isFavorited($request),
             'difficulty' => $this->difficulty,
             'languages' => $this->languages ?? [],
             'tags' => $this->tags ?? [],
         ];
     }
+
 
     /**
      * Get main image URL with fallback to default image

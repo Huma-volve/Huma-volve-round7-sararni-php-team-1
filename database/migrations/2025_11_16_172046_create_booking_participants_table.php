@@ -35,8 +35,6 @@ return new class extends Migration
             // Additional
             $table->text('special_requests')->nullable();
             $table->string('seat_number', 10)->nullable()->comment('For flights');
-            $table->enum('type', ['adult','child','infant']);
-
 
             $table->timestamps();
 

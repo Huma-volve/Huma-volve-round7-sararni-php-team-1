@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+
 use Illuminate\Support\Str;
 
 /**
@@ -17,6 +18,7 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
+
         $title = $this->faker->unique()->words(2, true);
 
         return [
@@ -24,6 +26,6 @@ class CategoryFactory extends Factory
             'slug' => Str::slug($title).'-'.Str::random(4),
             'image' => $this->faker->imageUrl(),
             'description' => $this->faker->sentence(),
-        ];
+         ];
     }
 }

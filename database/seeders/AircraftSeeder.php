@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+
 use App\Models\Aircraft;
 use Illuminate\Database\Seeder;
 
@@ -21,3 +22,4 @@ class AircraftSeeder extends Seeder
         }
     }
 }
+ 

@@ -3,17 +3,20 @@
 namespace App\Services;
 
 use App\Models\Car;
+use App\Models\CarPriceTier;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CarService
 {
+
     public function createCar(array $data)
     {
         return DB::transaction(function () use ($data) {
 
             // Create Car
             $carData = $data;
+
             unset($carData['image'], $carData['images'], $carData['price_tiers']);
 
             $car = Car::create($carData);
@@ -21,7 +24,7 @@ class CarService
             // Upload Single Image
             if (isset($data['image'])) {
                 try {
-                    $timestamp = now()->format('YmdHis'); 
+                    $timestamp = now()->format('YmdHis');
                     $originalName = pathinfo($data['image']->getClientOriginalName(), PATHINFO_FILENAME);
                     $extension = $data['image']->getClientOriginalExtension();
 
@@ -33,6 +36,7 @@ class CarService
                     Log::error('Error uploading car image', ['message' => $th->getMessage()]);
                 }
             }
+
 
             // Upload Multiple Images
             if (isset($data['images']) && is_array($data['images'])) {

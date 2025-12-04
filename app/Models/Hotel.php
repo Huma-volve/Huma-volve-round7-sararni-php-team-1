@@ -15,6 +15,14 @@ class Hotel extends Model
 
     protected $fillable = [
         'name',
+        'category_id',
+        'slug',
+        'amenities',
+        'contact_info',
+        'policies',
+        'location_id',
+        'location_lat',
+        'location_lng',
         'slug',
         'location_id',
         'stars',
@@ -27,8 +35,11 @@ class Hotel extends Model
     {
         return [
             'recommended' => 'array',
+            'policies' => 'array',
+
         ];
     }
+
 
     public function location(): BelongsTo
     {
@@ -46,4 +57,5 @@ class Hotel extends Model
         return $this->hasMany(Favorite::class, 'item_id')
             ->where('category', 'hotel');
     }
+
 }

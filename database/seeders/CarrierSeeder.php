@@ -2,11 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Carrier;
-use Illuminate\Database\Seeder;
+ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+ use App\Models\Carrier;
+ use Illuminate\Database\Seeder;
 
 class CarrierSeeder extends Seeder
 {
+
     public function run(): void
     {
         $carriers = [
@@ -21,3 +23,4 @@ class CarrierSeeder extends Seeder
         }
     }
 }
+ 

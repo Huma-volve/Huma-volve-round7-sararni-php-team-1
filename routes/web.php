@@ -1,14 +1,19 @@
 <?php
 
+
+use App\Http\Controllers\Api\PaymentController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+
 Route::get('/test/google-auth', function () {
     return view('test-google-auth');
 })->name('test.google.auth');
+
 
 Route::middleware([
     'auth:sanctum',
@@ -19,3 +24,4 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+

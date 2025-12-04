@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Car;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -19,9 +20,11 @@ class Brand extends Model implements HasMedia
     protected $fillable = ['name'];
     protected $appends = ['images'];
 
+
     public function cars(){
         return $this->hasMany(Car::class);
     }
+
 
     public function registerMediaCollections(): void
     {
@@ -34,7 +37,7 @@ class Brand extends Model implements HasMedia
         $this->addMediaConversion('thumb')
             ->width(300)
             ->height(200)
-            ->nonQueued(); 
+            ->nonQueued();
     }
 
     public function getImagesAttribute()
@@ -47,4 +50,5 @@ class Brand extends Model implements HasMedia
             ];
         });
     }
+ 
 }

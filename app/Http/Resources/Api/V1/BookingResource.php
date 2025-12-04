@@ -17,6 +17,7 @@ class BookingResource extends JsonResource
         if ($this->item) {
             if ($this->category === 'tour') {
                 $item = new TourResource($this->item);
+
             } elseif ($this->category === 'flight') {
                 $item = [
                     'id' => $this->item->id,
@@ -37,6 +38,7 @@ class BookingResource extends JsonResource
             'booking_reference' => $this->booking_reference,
             'category' => $this->category,
             'item' => $item,
+
             'flight_details' => $this->when($this->category === 'flight', function () use ($meta) {
 
 
@@ -64,6 +66,7 @@ class BookingResource extends JsonResource
                         'email' => $participant->email,
                         'phone' => $participant->phone,
                         'seat_number' => $participant->seat_number,
+
                         'type' => $participant->type,
                         'passport_number' => $participant->passport_number,
                         'seats' => $participant->bookingFlights->map(function ($bf) {

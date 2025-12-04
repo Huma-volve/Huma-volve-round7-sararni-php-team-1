@@ -15,6 +15,7 @@ class LocationSeeder extends Seeder
     {
         //
          $locations = [
+
             // Egypt
             ['city' => 'Cairo', 'country' => 'Egypt', 'latitude' => 30.0444, 'longitude' => 31.2357],
             ['city' => 'Giza', 'country' => 'Egypt', 'latitude' => 29.9765, 'longitude' => 31.1313],
@@ -31,6 +32,7 @@ class LocationSeeder extends Seeder
             ['city' => 'Ismailia', 'country' => 'Egypt', 'latitude' => 30.6043, 'longitude' => 32.2723],
             ['city' => 'Port Said', 'country' => 'Egypt', 'latitude' => 31.2653, 'longitude' => 32.3019],
             ['city' => 'Suez', 'country' => 'Egypt', 'latitude' => 29.9668, 'longitude' => 32.5498],
+
             // International
             ['city' => 'Paris', 'country' => 'France', 'latitude' => 48.8566, 'longitude' => 2.3522],
             ['city' => 'Dubai', 'country' => 'UAE', 'latitude' => 25.2048, 'longitude' => 55.2708],

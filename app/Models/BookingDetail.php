@@ -26,5 +26,6 @@ class BookingDetail extends Model
     {
         return $this->belongsTo(Booking::class);
     }
-    
+
+
 }

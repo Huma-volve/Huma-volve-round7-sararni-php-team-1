@@ -23,6 +23,7 @@ class CarSeeder extends Seeder
         $locations = Location::all()->pluck('id')->toArray();
         $users = User::all()->pluck('id')->toArray();
 
+
         for ($i = 0; $i < 50; $i++) {
             DB::table('cars')->insert([
                 'brand_id' => $faker->randomElement($brands),
@@ -34,7 +35,7 @@ class CarSeeder extends Seeder
                 'fuel_type' => $faker->randomElement(['Gasoline', 'Diesel', 'Electric', 'Hybrid']),
                 'transmission' => $faker->randomElement(['Automatic', 'Manual']),
                 'luggage_capacity' => $faker->numberBetween(0, 5),
-                'air_conditioning' => $faker->boolean(90), 
+                'air_conditioning' => $faker->boolean(90),
                 'features' => json_encode($faker->randomElements(['GPS', 'Bluetooth', 'Sunroof', 'Heated Seats'], 2)),
                 'pickup_location_id' => $faker->randomElement($locations),
                 'dropoff_location_id' => $faker->randomElement($locations),

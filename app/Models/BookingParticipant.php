@@ -42,6 +42,7 @@ class BookingParticipant extends Model
     {
         return "{$this->first_name} {$this->last_name}";
     }
+
     public function bookingFlights()
     {
         return $this->hasMany(BookingFlight::class, 'participant_id');

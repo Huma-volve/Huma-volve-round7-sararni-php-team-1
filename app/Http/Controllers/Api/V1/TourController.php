@@ -3,17 +3,18 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Tour\IndexTourRequest;
+use App\Http\Requests\Api\V1\Tour\SearchTourRequest;
 use App\Http\Requests\Api\V1\Tour\AvailableTourRequest;
 use App\Http\Requests\Api\V1\Tour\CompareTourRequest;
-use App\Http\Requests\Api\V1\Tour\IndexTourRequest;
-use App\Http\Requests\Api\V1\Tour\RecommendTourRequest;
-use App\Http\Requests\Api\V1\Tour\SearchTourRequest;
-use App\Http\Resources\Api\V1\TourCompareResource;
+ use App\Http\Requests\Api\V1\Tour\RecommendTourRequest;
+ use App\Http\Resources\Api\V1\TourCompareResource;
 use App\Http\Resources\Api\V1\TourDetailResource;
 use App\Http\Resources\Api\V1\TourResource;
 use App\Models\Tour;
 use App\Services\TourService;
 use Illuminate\Http\JsonResponse;
+
 use Illuminate\Http\Request;
 
 class TourController extends Controller
@@ -27,7 +28,6 @@ class TourController extends Controller
         $query = Tour::query()
             ->with(['category', 'media'])
             ->active();
-
         // Eager load user's favorites if authenticated to avoid N+1 queries
         if ($request->user()) {
             $userFavorites = \App\Models\Favorite::where('user_id', $request->user()->id)
@@ -103,6 +103,7 @@ class TourController extends Controller
         return $this->paginatedResponse($tours);
     }
 
+
     public function show(int $id, Request $request): JsonResponse
     {
         $tour = Tour::with([
@@ -123,6 +124,7 @@ class TourController extends Controller
             },
         ])->findOrFail($id);
 
+
         // Eager load user's favorite status if authenticated
         if ($request->user()) {
             $userId = $request->user()->id;
@@ -137,6 +139,7 @@ class TourController extends Controller
         $similarTours = $this->tourService->getSimilarTours($tour, 6);
         $tour->setRelation('similarTours', $similarTours);
 
+
         // Create resource and let Laravel handle request passing automatically
         return $this->successResponse(new TourDetailResource($tour));
     }
@@ -145,6 +148,7 @@ class TourController extends Controller
     {
         $tour = Tour::findOrFail($id);
         $similarTours = $this->tourService->getSimilarTours($tour, 6);
+
 
         // Eager load user's favorites if authenticated
         if ($request->user() && $similarTours->isNotEmpty()) {
@@ -218,7 +222,6 @@ class TourController extends Controller
                 $tour->is_user_favorited = in_array($tour->id, $favorites) ? 1 : 0;
             });
         }
-
         $pageSize = $request->input('page_size', 20);
         $page = $request->input('page', 1);
 

@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Constants\BookingStatus;
+use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,11 +18,18 @@ class Booking extends Model
     use HasFactory;
     use SoftDeletes;
 
+    public const STATUS_PENDING = BookingStatus::PENDING;
+    public const STATUS_CONFIRMED = BookingStatus::CONFIRMED;
+    public const STATUS_CANCELLED = BookingStatus::CANCELLED;
+
+
     protected $fillable = [
         'user_id',
         'booking_reference',
         'category',
         'item_id',
+        'room_id',
+        'rate_plan_id',
         'status',
         'total_price',
         'currency',
@@ -59,9 +69,15 @@ class Booking extends Model
     }
 
     public function user(): BelongsTo
+
     {
         return $this->belongsTo(User::class);
     }
+
+    protected $casts = [
+    'guest_details' => 'array',
+   ];
+
 
     public function details(): HasOne
     {
@@ -77,6 +93,12 @@ class Booking extends Model
     {
         return $this->hasOne(Review::class);
     }
+
+     public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class);
+    }
+
 
     /**
      * Get the item (tour/hotel/car/flight) based on category
@@ -185,6 +207,7 @@ class Booking extends Model
     {
         $year = now()->format('Y');
         $random = Str::upper(Str::random(6));
+
         $prefix = match ($this->category ?? 'tour') {
             'tour' => 'TOUR',
             'hotel' => 'HOTEL',
@@ -215,11 +238,12 @@ class Booking extends Model
             }
         });
     }
+
     public function flight()
     {
         return $this->belongsTo(Flight::class);
     }
-    
+
     public function outboundFlight(): BelongsTo
     {
         return $this->belongsTo(Flight::class, 'outbound_flight_id');
@@ -238,4 +262,5 @@ class Booking extends Model
     {
         return $this->hasMany(BookingDetail::class);
     }
+
 }

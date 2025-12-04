@@ -26,6 +26,7 @@ class QuestionSeeder extends Seeder
             return;
         }
 
+
         $defaultResponder = $admins->first() ?? User::where('id', '!=', $customer->id)->first() ?? $customer;
 
         $questions = [
@@ -83,6 +84,7 @@ class QuestionSeeder extends Seeder
         ];
 
         foreach ($tours as $tour) {
+
             $questionKeys = array_keys($questions['en']);
             shuffle($questionKeys);
             $selectedKeys = array_slice($questionKeys, 0, 3);
@@ -113,7 +115,6 @@ class QuestionSeeder extends Seeder
                 if ($isAnswered) {
                     $answerKey = array_rand($answers['en']);
                     $question->translateOrNew('en')->answer = $answers['en'][$answerKey];
-                    $question->translateOrNew('ar')->answer = $answers['ar'][$answerKey];
                 }
 
                 $question->save();

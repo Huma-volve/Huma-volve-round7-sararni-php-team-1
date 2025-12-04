@@ -40,6 +40,12 @@ class StoreCarRequest extends FormRequest
             'availability_calendar' =>['nullable', 'string'],
             'cancellation_policy'=>['nullable', 'string'],
             'price_tiers' => 'nullable|array',
+<<<<<<< HEAD
+            'price_tiers.*.from_hours' => 'nullable|integer',
+            'price_tiers.*.to_hours' => 'nullable|integer',
+            'price_tiers.*.price_per_hour' => 'nullable|numeric',
+            'price_tiers.*.price_per_day' => 'nullable|numeric',
+=======
             'price_tiers.*.from_hours' => ['nullable','integer'],
             'price_tiers.*.to_hours' => ['nullable','integer'],
             'price_tiers.*.price_per_hour' => ['required','numeric'],
@@ -47,6 +53,7 @@ class StoreCarRequest extends FormRequest
             'image' => 'nullable|image|max:2048',
             'images.*' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
 
+>>>>>>> 6e876ba9d73195e746d0ed47df06f9269b0e177e
         ];
     }
 }

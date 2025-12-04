@@ -2,12 +2,14 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Flight;
 use App\Models\Location;
 use Illuminate\Database\Seeder;
 
 class FlightSeeder extends Seeder
 {
+
     public function run(): void
     {
         // Get locations for origin and destination

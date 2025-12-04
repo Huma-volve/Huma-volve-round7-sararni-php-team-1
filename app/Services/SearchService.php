@@ -159,6 +159,7 @@ class SearchService
 
         // البحث النصي
         if (! empty($query)) {
+
             $searchQuery->where(function ($q) use ($query) {
                 $q->where('flight_number', 'like', "%{$query}%")
                     ->orWhereHas('origin', function ($subQ) use ($query) {
@@ -170,7 +171,7 @@ class SearchService
                             ->orWhere('country', 'like', "%{$query}%");
                     });
             });
-        }
+         }
 
         // تطبيق الفلاتر
         $this->applyFlightFilters($searchQuery, $filters);
@@ -404,6 +405,7 @@ class SearchService
             ->limit($limit)
             ->get();
 
+
         // البحث في السيارات
         $cars = Car::query()
             ->with(['brand', 'pickupLocation', 'dropoffLocation'])
@@ -485,6 +487,7 @@ class SearchService
                     ->limit($limit)
                     ->get(),
 
+
                 'cars' => Car::query()
                     ->with(['brand', 'pickupLocation', 'dropoffLocation'])
                     ->where(function ($q) use ($lat, $lng, $radius) {
@@ -522,7 +525,7 @@ class SearchService
                     ->orderBy('departure_time', 'asc')
                     ->limit($limit)
                     ->get(),
-
+ 
                 default => collect(),
             };
         }

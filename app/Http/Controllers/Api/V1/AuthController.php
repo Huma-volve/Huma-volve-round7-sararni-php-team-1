@@ -23,7 +23,10 @@ class AuthController extends Controller
 {
     public function __construct(
         protected OtpService $otpService,
+        protected GoogleOAuthService $googleOAuthService
+
         // protected GoogleOAuthService $googleOAuthService
+
     ) {}
 
     public function register(RegisterRequest $request): JsonResponse
@@ -269,6 +272,7 @@ class AuthController extends Controller
         ]);
     }
 
+
     public function googleCallback(Request $request)
     {
         $code = $request->query('code');
@@ -334,6 +338,7 @@ class AuthController extends Controller
             ], 400);
         }
     }
+
 
     public function exchangeGoogleCode(Request $request): JsonResponse
     {
@@ -441,6 +446,7 @@ class AuthController extends Controller
         ]);
     }
 
+
     public function googleLogin(Request $request): JsonResponse
     {
         $request->validate([
@@ -535,4 +541,5 @@ class AuthController extends Controller
             ], 400);
         }
     }
+
 }

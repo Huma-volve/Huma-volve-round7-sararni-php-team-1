@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
+
             $table->enum('class_name', ['economy', 'business', 'first']);
             $table->timestamps();
         });

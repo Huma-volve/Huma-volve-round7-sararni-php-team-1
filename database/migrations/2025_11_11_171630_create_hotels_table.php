@@ -13,15 +13,27 @@ return new class extends Migration
     {
         Schema::create('hotels', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('slug');
+            $table->string('amenities');
+            $table->string('contact_info');
+            $table->json('policies');
             $table->foreignId('location_id')->constrained('locations')->onDelete('cascade');
+            $table->decimal('location_lat', 10, 8)->nullable();
+            $table->decimal('location_lng', 11, 8)->nullable();
+
             $table->tinyInteger('stars')->nullable();
             $table->integer('rooms_count')->nullable();
             $table->json('recommended')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+           $table->index('category_id');
+           $table->index('name');
+            $table->index(['location_lat', 'location_lng']);
+
         });
     }
 

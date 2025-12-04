@@ -26,6 +26,7 @@ class TourSeeder extends Seeder
         }
 
         $tours = [
+
             // Paris Tours (as shown in the design)
             [
                 'name_en' => 'Paris Evening Cruise',
@@ -223,6 +224,7 @@ class TourSeeder extends Seeder
                 'location_lat' => 29.9792,
                 'location_lng' => 31.1342,
                 'is_featured' => true,
+
                 'provider_info' => ['guide_type' => 'Egyptologist', 'transportation' => 'Bus'],
             ],
             [
@@ -244,6 +246,7 @@ class TourSeeder extends Seeder
                 'location_lat' => 30.0444,
                 'location_lng' => 31.2357,
                 'is_featured' => true,
+
                 'provider_info' => ['guide_type' => 'Tour guide', 'transportation' => 'Boat'],
             ],
             [
@@ -607,6 +610,12 @@ class TourSeeder extends Seeder
                 ]
             );
 
+            // Add translations
+            $tour->translateOrNew('en')->name = $tourData['name_en'];
+            $tour->translateOrNew('en')->short_description = "Experience {$tourData['name_en']}";
+            $tour->translateOrNew('en')->description = "Full description for {$tourData['name_en']}";
+            $tour->translateOrNew('en')->highlights = "Highlight 1\nHighlight 2\nHighlight 3";
+            $tour->translateOrNew('en')->meeting_point = 'Hotel lobby';
             // Add translations with more detailed descriptions
             $highlightsEn = match (true) {
                 str_contains(strtolower($tourData['name_en']), 'evening cruise') => "Evening cruise\nEiffel Tower view\nRomantic experience\nRiver Seine\nCity lights",
@@ -653,14 +662,22 @@ class TourSeeder extends Seeder
             $tour->translateOrNew('en')->description = "Full detailed description for {$tourData['name_en']}. This tour offers an amazing experience with professional guides, comfortable transportation, and unforgettable memories. Perfect for travelers looking to explore and discover new places.";
             $tour->translateOrNew('en')->highlights = $highlightsEn;
             $tour->translateOrNew('en')->meeting_point = $tourData['location_lat'] > 40 ? 'Hotel lobby' : 'City center';
+>>>>>>> 6e876ba9d73195e746d0ed47df06f9269b0e177e
             $tour->translateOrNew('en')->cancellation_policy = 'Free cancellation up to 24 hours before tour';
             $tour->translateOrNew('en')->terms_conditions = 'Terms and conditions apply';
 
             $tour->translateOrNew('ar')->name = $tourData['name_ar'];
+<<<<<<< HEAD
+            $tour->translateOrNew('ar')->short_description = "تجربة {$tourData['name_ar']}";
+            $tour->translateOrNew('ar')->description = "وصف كامل لـ {$tourData['name_ar']}";
+            $tour->translateOrNew('ar')->highlights = "ميزة 1\nميزة 2\nميزة 3";
+            $tour->translateOrNew('ar')->meeting_point = 'لوبي الفندق';
+=======
             $tour->translateOrNew('ar')->short_description = $shortDescAr;
             $tour->translateOrNew('ar')->description = "وصف تفصيلي كامل لـ {$tourData['name_ar']}. تقدم هذه الجولة تجربة رائعة مع أدلة محترفة ووسائل نقل مريحة وذكريات لا تُنسى. مثالية للمسافرين الذين يبحثون عن الاستكشاف واكتشاف أماكن جديدة.";
             $tour->translateOrNew('ar')->highlights = $highlightsAr;
             $tour->translateOrNew('ar')->meeting_point = $tourData['location_lat'] > 40 ? 'لوبي الفندق' : 'وسط المدينة';
+>>>>>>> 6e876ba9d73195e746d0ed47df06f9269b0e177e
             $tour->translateOrNew('ar')->cancellation_policy = 'إلغاء مجاني حتى 24 ساعة قبل الجولة';
             $tour->translateOrNew('ar')->terms_conditions = 'الشروط والأحكام تنطبق';
 
@@ -693,6 +710,12 @@ class TourSeeder extends Seeder
                     ]
                 );
 
+<<<<<<< HEAD
+                $itinerary->translateOrNew('en')->title = "Day {$day}";
+                $itinerary->translateOrNew('en')->description = "Day {$day} description";
+                $itinerary->translateOrNew('en')->location = "Location for day {$day}";
+                $itinerary->translateOrNew('en')->duration = '8 hours';
+=======
                 // Set time-based duration for Paris tours
                 $timeSlots = match (true) {
                     str_contains(strtolower($tourData['name_en']), 'evening cruise') => ['18:00', '21:00', '3 hours'],
@@ -710,6 +733,7 @@ class TourSeeder extends Seeder
                 $itinerary->translateOrNew('en')->description = "Day {$day} description with detailed itinerary";
                 $itinerary->translateOrNew('en')->location = "Location for day {$day}";
                 $itinerary->translateOrNew('en')->duration = "{$timeSlots[0]} - {$timeSlots[1]} ({$timeSlots[2]})";
+>>>>>>> 6e876ba9d73195e746d0ed47df06f9269b0e177e
 
                 $itinerary->translateOrNew('ar')->title = "اليوم {$day}";
                 $itinerary->translateOrNew('ar')->description = "وصف اليوم {$day}";

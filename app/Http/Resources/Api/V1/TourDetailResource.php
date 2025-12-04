@@ -2,12 +2,14 @@
 
 namespace App\Http\Resources\Api\V1;
 
+
 use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TourDetailResource extends JsonResource
 {
+
     /**
      * Transform the resource into an array.
      *
@@ -18,10 +20,10 @@ class TourDetailResource extends JsonResource
         // Get user from request - try multiple methods
         // In Laravel, when JsonResource is used, the request is automatically passed
         // But in some cases (like tests), we need to use request() helper or auth()
-        $user = $request->user() 
-            ?? request()->user() 
+        $user = $request->user()
+            ?? request()->user()
             ?? auth()->user();
-        
+
         $isFavorited = $user ? $this->isFavorited($request, $user) : false;
 
         return [
@@ -30,6 +32,7 @@ class TourDetailResource extends JsonResource
             'name' => $this->name,
             'short_description' => $this->short_description,
             'description' => $this->description,
+
             'main_image' => $this->getMainImageUrl(),
             'main_image_thumb' => $this->getMainImageUrl('thumb'),
             'main_image_preview' => $this->getMainImageUrl('preview'),
@@ -109,6 +112,7 @@ class TourDetailResource extends JsonResource
             }),
         ];
     }
+
 
     /**
      * Check if the tour is favorited by the authenticated user
