@@ -159,14 +159,19 @@ class SearchService
 
         // البحث النصي
         if (! empty($query)) {
-            $searchQuery->where('flight_number', 'like', "%{$query}%")
-                ->orWhereHas('origin', function ($q) use ($query) {
-                    $q->where('name', 'like', "%{$query}%");
-                })
-                ->orWhereHas('destination', function ($q) use ($query) {
-                    $q->where('name', 'like', "%{$query}%");
-                });
-        }
+
+            $searchQuery->where(function ($q) use ($query) {
+                $q->where('flight_number', 'like', "%{$query}%")
+                    ->orWhereHas('origin', function ($subQ) use ($query) {
+                        $subQ->where('city', 'like', "%{$query}%")
+                            ->orWhere('country', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('destination', function ($subQ) use ($query) {
+                        $subQ->where('city', 'like', "%{$query}%")
+                            ->orWhere('country', 'like', "%{$query}%");
+                    });
+            });
+         }
 
         // تطبيق الفلاتر
         $this->applyFlightFilters($searchQuery, $filters);
@@ -401,6 +406,54 @@ class SearchService
             ->get();
 
 
+        // البحث في السيارات
+        $cars = Car::query()
+            ->with(['brand', 'pickupLocation', 'dropoffLocation'])
+            ->where(function ($q) use ($query) {
+                $q->where('model', 'like', "%{$query}%")
+                    ->orWhere('make', 'like', "%{$query}%")
+                    ->orWhere('category', 'like', "%{$query}%");
+            });
+
+        if ($lat && $lng) {
+            $cars->where(function ($q) use ($lat, $lng, $radius) {
+                $q->whereHas('pickupLocation', function ($subQ) use ($lat, $lng, $radius) {
+                    $subQ->whereRaw(
+                        '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?',
+                        [$lat, $lng, $lat, $radius]
+                    );
+                })->orWhereHas('dropoffLocation', function ($subQ) use ($lat, $lng, $radius) {
+                    $subQ->whereRaw(
+                        '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?',
+                        [$lat, $lng, $lat, $radius]
+                    );
+                });
+            });
+        }
+
+        $results['cars'] = $cars->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+
+        // البحث في الرحلات الجوية
+        $flights = Flight::query()
+            ->with(['carrier', 'aircraft', 'origin', 'destination'])
+            ->where(function ($q) use ($query) {
+                $q->where('flight_number', 'like', "%{$query}%")
+                    ->orWhereHas('origin', function ($subQ) use ($query) {
+                        $subQ->where('city', 'like', "%{$query}%")
+                            ->orWhere('country', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('destination', function ($subQ) use ($query) {
+                        $subQ->where('city', 'like', "%{$query}%")
+                            ->orWhere('country', 'like', "%{$query}%");
+                    });
+            });
+
+        $results['flights'] = $flights->orderBy('departure_time', 'asc')
+            ->limit($limit)
+            ->get();
+
         return $results;
     }
 
@@ -435,6 +488,44 @@ class SearchService
                     ->get(),
 
 
+                'cars' => Car::query()
+                    ->with(['brand', 'pickupLocation', 'dropoffLocation'])
+                    ->where(function ($q) use ($lat, $lng, $radius) {
+                        $q->whereHas('pickupLocation', function ($subQ) use ($lat, $lng, $radius) {
+                            $subQ->whereRaw(
+                                '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?',
+                                [$lat, $lng, $lat, $radius]
+                            );
+                        })->orWhereHas('dropoffLocation', function ($subQ) use ($lat, $lng, $radius) {
+                            $subQ->whereRaw(
+                                '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?',
+                                [$lat, $lng, $lat, $radius]
+                            );
+                        });
+                    })
+                    ->orderBy('created_at', 'desc')
+                    ->limit($limit)
+                    ->get(),
+
+                'flights' => Flight::query()
+                    ->with(['carrier', 'aircraft', 'origin', 'destination'])
+                    ->where(function ($q) use ($lat, $lng, $radius) {
+                        $q->whereHas('origin', function ($subQ) use ($lat, $lng, $radius) {
+                            $subQ->whereRaw(
+                                '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?',
+                                [$lat, $lng, $lat, $radius]
+                            );
+                        })->orWhereHas('destination', function ($subQ) use ($lat, $lng, $radius) {
+                            $subQ->whereRaw(
+                                '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) <= ?',
+                                [$lat, $lng, $lat, $radius]
+                            );
+                        });
+                    })
+                    ->orderBy('departure_time', 'asc')
+                    ->limit($limit)
+                    ->get(),
+ 
                 default => collect(),
             };
         }

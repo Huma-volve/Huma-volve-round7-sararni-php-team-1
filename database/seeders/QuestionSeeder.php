@@ -26,6 +26,9 @@ class QuestionSeeder extends Seeder
             return;
         }
 
+
+        $defaultResponder = $admins->first() ?? User::where('id', '!=', $customer->id)->first() ?? $customer;
+
         $questions = [
             'en' => [
                 'What is included in the tour price?',
@@ -81,37 +84,37 @@ class QuestionSeeder extends Seeder
         ];
 
         foreach ($tours as $tour) {
-            // Create 2-3 questions per tour for customer user
-            $numQuestions = rand(2, 3);
 
-            for ($i = 0; $i < $numQuestions; $i++) {
-                $questionIndex = array_rand($questions['en']);
-                $status = ['pending', 'answered', 'answered'][array_rand(['pending', 'answered', 'answered'])];
+            $questionKeys = array_keys($questions['en']);
+            shuffle($questionKeys);
+            $selectedKeys = array_slice($questionKeys, 0, 3);
 
-                // Check if question already exists for this user and tour
-                $existingQuestion = Question::where('user_id', $customer->id)
-                    ->where('tour_id', $tour->id)
-                    ->first();
-
-                if ($existingQuestion) {
-                    continue;
+            foreach ($selectedKeys as $index => $key) {
+                $isAnswered = $index === 0 || rand(0, 1) === 1;
+                $status = $isAnswered ? 'answered' : 'pending';
+                $answeringUser = null;
+                if ($isAnswered) {
+                    if ($admins->isNotEmpty()) {
+                        $answeringUser = $admins->random();
+                    } else {
+                        $answeringUser = $defaultResponder;
+                    }
                 }
 
                 $question = Question::create([
                     'user_id' => $customer->id,
                     'tour_id' => $tour->id,
                     'status' => $status,
-                    'answered_by' => $status === 'answered' && $admins->isNotEmpty() ? $admins->random()->id : null,
-                    'answered_at' => $status === 'answered' ? now()->subDays(rand(1, 10)) : null,
+                    'answered_by' => $answeringUser?->id,
+                    'answered_at' => $isAnswered ? now()->subDays(rand(1, 10)) : null,
                 ]);
 
-                $question->translateOrNew('en')->question = $questions['en'][$questionIndex];
-                $question->translateOrNew('ar')->question = $questions['ar'][$questionIndex];
+                $question->translateOrNew('en')->question = $questions['en'][$key];
+                $question->translateOrNew('ar')->question = $questions['ar'][$key];
 
-                if ($status === 'answered') {
-                    $answerIndex = array_rand($answers['en']);
-                    $question->translateOrNew('en')->answer = $answers['en'][$answerIndex];
-                    $question->translateOrNew('ar')->answer = $answers['ar'][$answerIndex];
+                if ($isAnswered) {
+                    $answerKey = array_rand($answers['en']);
+                    $question->translateOrNew('en')->answer = $answers['en'][$answerKey];
                 }
 
                 $question->save();

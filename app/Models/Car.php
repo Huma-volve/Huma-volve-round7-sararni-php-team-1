@@ -5,9 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Car extends Model
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+class Car extends Model implements HasMedia
 {
-    
+    use InteractsWithMedia;
+
+
     protected $fillable = [
         'brand_id', 'model', 'category', 'make', 'seats_count', 'doors',
         'fuel_type', 'transmission', 'luggage_capacity', 'air_conditioning',
@@ -40,6 +46,26 @@ class Car extends Model
     {
         $this->addMediaCollection('car_images')
             ->useDisk('public');
+    }
+
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(300)
+            ->height(200)
+            ->nonQueued();
+    }
+
+    public function getImagesAttribute()
+    {
+        return $this->getMedia('car_images')->map(function ($media) {
+            return [
+                'id' => $media->id,
+                'url' => $media->getUrl(),
+                'thumb' => $media->getUrl('thumb'),
+            ];
+        });
     }
 
 

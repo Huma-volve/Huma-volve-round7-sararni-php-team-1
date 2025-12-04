@@ -21,6 +21,7 @@ class SearchController extends Controller
     public function search(SearchRequest $request): JsonResponse
     {
         $types = $request->input('types', ['tours' , 'hotels'] ); // Default to tours only
+
         $perPage = $request->input('page_size', 20);
 
         $filters = $request->only([
@@ -39,6 +40,19 @@ class SearchController extends Controller
             'stars',
             'brand_id',
             'location_id',
+            // Flight filters
+            'origin_id',
+            'destination_id',
+            'departure_date',
+            'return_date',
+            'carrier_id',
+            'class_id',
+            // Hotel filters
+            'check_in',
+            'check_out',
+            // Car filters
+            'pickup_date',
+            'dropoff_date',
         ]);
 
         $results = $this->searchService->search($request->q, $filters, $types, $perPage);
@@ -68,7 +82,6 @@ class SearchController extends Controller
     public function quickSearch(SearchRequest $request): JsonResponse
     {
 
-        
         $lat = $request->input('location_lat');
         $lng = $request->input('location_lng');
         $radius = $request->input('radius', 50);
@@ -92,9 +105,14 @@ class SearchController extends Controller
      */
     public function nearby(SearchRequest $request): JsonResponse
     {
+
+        // Validate only location for nearby search (q is not required)
         $request->validate([
             'location_lat' => ['required', 'numeric'],
             'location_lng' => ['required', 'numeric'],
+        ], [], [
+            'location_lat' => 'location latitude',
+            'location_lng' => 'location longitude',
         ]);
 
         $types = $request->input('types', ['tours', 'hotels']);
@@ -128,7 +146,8 @@ class SearchController extends Controller
         return match ($type) {
             'tours' => TourResource::collection(collect($items))->resolve(),
             // TODO: إضافة Resources للأنواع الأخرى
-            'hotels' => HotelResource::collection(collect($items))->resolve(),
+
+            // 'hotels' => HotelResource::collection(collect($items))->resolve(),
             // 'cars' => CarResource::collection(collect($items))->resolve(),
             // 'flights' => FlightResource::collection(collect($items))->resolve(),
             default => $items,

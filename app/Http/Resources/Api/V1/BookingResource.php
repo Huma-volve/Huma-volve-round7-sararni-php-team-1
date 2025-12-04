@@ -17,6 +17,13 @@ class BookingResource extends JsonResource
         if ($this->item) {
             if ($this->category === 'tour') {
                 $item = new TourResource($this->item);
+
+            } elseif ($this->category === 'flight') {
+                $item = [
+                    'id' => $this->item->id,
+                    'flight_number' => $this->item->flight_number,
+                    'carrier' => $this->item->carrier->carrier_name ?? null,
+                ];
             } else {
                 // For other categories, return basic item info
                 $item = [
@@ -31,6 +38,17 @@ class BookingResource extends JsonResource
             'booking_reference' => $this->booking_reference,
             'category' => $this->category,
             'item' => $item,
+
+            'flight_details' => $this->when($this->category === 'flight', function () use ($meta) {
+
+
+
+                return [
+                    'trip_type' => $this->trip_type,
+                    'departure_time' => $this->departure_time?->format('H:i:s'),
+                    'arrival_time' => $this->arrival_time?->format('H:i:s'),
+                ];
+            }),
             'booking_date' => $this->booking_date->format('Y-m-d'),
             'booking_time' => $this->booking_time ? (is_string($this->booking_time) ? $this->booking_time : $this->booking_time->format('H:i:s')) : null,
             'check_in_date' => $this->check_in_date?->format('Y-m-d'),
@@ -48,6 +66,22 @@ class BookingResource extends JsonResource
                         'email' => $participant->email,
                         'phone' => $participant->phone,
                         'seat_number' => $participant->seat_number,
+
+                        'type' => $participant->type,
+                        'passport_number' => $participant->passport_number,
+                        'seats' => $participant->bookingFlights->map(function ($bf) {
+                            return [
+                                'direction' => $bf->direction,
+                                'price' => $bf->price,
+                                'flight_id' => $bf->flight_id,
+
+                                'seat' => [
+                                    'seat_id' => $bf->flightSeat->id,
+                                    'seat_number' => $bf->flightSeat->seat_number,
+                                    'class' => $bf->flightSeat->class->name ?? null,
+                                ],
+                            ];
+                        }),
                     ];
                 });
             }, function () use ($meta) {
@@ -67,6 +101,7 @@ class BookingResource extends JsonResource
             'details' => $this->when($this->relationLoaded('details'), function () use ($meta) {
                 return $meta;
             }),
+
             'status' => $this->status,
             'special_requests' => $this->special_requests,
             'cancellation_reason' => $this->cancellation_reason,

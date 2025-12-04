@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('aircrafts', function (Blueprint $table) {
             $table->id();
             $table->string('model');
-            $table->text('seat_map');
+             $table->text('seat_map');
             $table->timestamps();
-            $table->softDeletes();
+             $table->integer('total_seats');
+             $table->softDeletes();
         });
     }
 

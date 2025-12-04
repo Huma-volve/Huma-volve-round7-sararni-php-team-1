@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('carriers', function (Blueprint $table) {
             $table->id();
             $table->string('carrier_name');
+            $table->string('code')->unique();
             $table->timestamps();
             $table->softDeletes();
         });

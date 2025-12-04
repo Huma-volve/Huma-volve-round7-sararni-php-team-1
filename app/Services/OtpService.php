@@ -15,6 +15,11 @@ class OtpService
 
     public function generateCode(int $length = 4): string
     {
+        // Use default OTP code in development/local environment
+        if (app()->environment(['local', 'development']) || config('app.debug', false)) {
+            return '1234';
+        }
+
         return str_pad((string) random_int(0, 9999), $length, '0', STR_PAD_LEFT);
     }
 

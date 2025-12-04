@@ -54,6 +54,13 @@ return new class extends Migration
             $table->timestamp('cancelled_at')->nullable();
             $table->enum('cancelled_by', ['user', 'admin', 'system'])->nullable();
 
+
+
+
+            // For flights only
+            $table->time('departure_time')->nullable();
+            $table->time('arrival_time')->nullable();
+            $table->enum('trip_type', ['one_way','round_trip','multi_city']);
             $table->timestamps();
             $table->softDeletes();
 

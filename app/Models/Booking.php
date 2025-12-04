@@ -46,6 +46,9 @@ class Booking extends Model
         'cancellation_reason',
         'cancelled_at',
         'cancelled_by',
+        'departure_time',
+        'arrival_time',
+        'trip_type',
     ];
 
     protected function casts(): array
@@ -58,15 +61,18 @@ class Booking extends Model
             'dropoff_date' => 'date',
             'cancelled_at' => 'datetime',
             'total_price' => 'decimal:2',
+            'departure_time' => 'datetime:H:i:s',
+            'arrival_time' => 'datetime:H:i:s',
+            'booking_time' => 'datetime:H:i:s',
+
         ];
     }
 
-        public function user() :BelongsTo
+    public function user(): BelongsTo
 
     {
         return $this->belongsTo(User::class);
     }
-
 
     protected $casts = [
     'guest_details' => 'array',
@@ -92,6 +98,7 @@ class Booking extends Model
     {
         return $this->belongsTo(Room::class);
     }
+
 
     /**
      * Get the item (tour/hotel/car/flight) based on category
@@ -200,7 +207,8 @@ class Booking extends Model
     {
         $year = now()->format('Y');
         $random = Str::upper(Str::random(6));
-        $prefix = match ($this->category ?? 'hotel') {
+
+        $prefix = match ($this->category ?? 'tour') {
             'tour' => 'TOUR',
             'hotel' => 'HOTEL',
             'car' => 'CAR',
@@ -231,5 +239,28 @@ class Booking extends Model
         });
     }
 
+    public function flight()
+    {
+        return $this->belongsTo(Flight::class);
+    }
+
+    public function outboundFlight(): BelongsTo
+    {
+        return $this->belongsTo(Flight::class, 'outbound_flight_id');
+    }
+
+    public function returnFlight(): BelongsTo
+    {
+        return $this->belongsTo(Flight::class, 'return_flight_id');
+    }
+    public function bookingFlights(): HasMany
+    {
+        return $this->hasMany(BookingFlight::class);
+    }
+
+    public function bookingDetails(): HasMany
+    {
+        return $this->hasMany(BookingDetail::class);
+    }
 
 }

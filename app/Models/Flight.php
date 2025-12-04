@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Flight extends Model
 {
     use HasFactory;
+
     use SoftDeletes;
 
     protected $fillable = [
@@ -42,13 +44,33 @@ class Flight extends Model
         return $this->belongsTo(Aircraft::class);
     }
 
-    public function destination(): BelongsTo
+
+
+
+    public function flightClasses(): HasMany
     {
-        return $this->belongsTo(Location::class, 'destination_id');
+        return $this->hasMany(FlightClass::class);
+    }
+
+    public function flightLegs(): HasMany
+    {
+        return $this->hasMany(FlightLeg::class);
+    }
+
+    public function flightSeats(): HasMany
+    {
+        return $this->hasMany(FlightSeat::class);
+    }
+
+    public function bookingFlights(): HasMany
+    {
+        return $this->hasMany(BookingFlight::class);
+
     }
 
     public function origin(): BelongsTo
     {
+
         return $this->belongsTo(Location::class, 'origin_id');
     }
 
@@ -62,5 +84,11 @@ class Flight extends Model
     {
         return $this->hasMany(Favorite::class, 'item_id')
             ->where('category', 'flight');
+         return $this->belongsTo(Airport::class, 'origin_id');
     }
+
+    public function destination(): BelongsTo
+    {
+        return $this->belongsTo(Airport::class, 'destination_id');
+     }
 }

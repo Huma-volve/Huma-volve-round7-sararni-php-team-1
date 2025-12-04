@@ -175,7 +175,9 @@ class Tour extends Model implements HasMedia
     {
         if ($date) {
             return $query->whereHas('availability', function ($q) use ($date) {
-                $q->where('date', $date)
+
+                $q->whereDate('date', $date)
+
                     ->where('is_active', true)
                     ->whereRaw('available_slots > booked_slots');
             });

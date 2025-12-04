@@ -15,13 +15,18 @@ return new class extends Migration
             $table->id();
             $table->foreignId('flight_id')->constrained()->onDelete('cascade');
             $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
-            $table->integer('price_per_seat');
-            $table->integer('seats_available');
-            $table->text('price_rules')->nullable();
-            $table->text('baggage_rules')->nullable();
-            $table->text('fare_conditions')->nullable();
-            $table->text('taxes_fees_breakdown')->nullable();
+
+
+            $table->decimal('price_per_seat', 10, 2)->nullable();
+            $table->integer('seats_available')->nullable();
+
+            $table->json('price_rules')->nullable();
+            $table->json('baggage_rules')->nullable();
+            $table->json('fare_conditions')->nullable();
+            $table->json('taxes_fees_breakdown')->nullable();
+
             $table->boolean('refundable')->default(false);
+
             $table->timestamps();
             $table->softDeletes();
         });

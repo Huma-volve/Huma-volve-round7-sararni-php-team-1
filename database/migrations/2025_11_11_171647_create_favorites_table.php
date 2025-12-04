@@ -17,14 +17,16 @@ return new class extends Migration
             $table->enum('category', ['tour', 'hotel', 'car', 'flight'])->index();
             $table->unsignedBigInteger('item_id')->comment('ID of tour/hotel/car/flight');
             $table->timestamps();
-
             // Unique constraint
             $table->unique(['user_id', 'category', 'item_id']);
-
             // Indexes
             $table->index('user_id');
             $table->index('item_id');
 
+            $table->unique(['user_id', 'category', 'item_id']);
+            $table->index('user_id');
+            $table->index('item_id');
+            $table->index(['category', 'item_id']);
         });
     }
 

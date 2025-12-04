@@ -13,8 +13,16 @@ class SearchRequest extends FormRequest
 
     public function rules(): array
     {
+<<<<<<< HEAD
         return [
             'q' => ['required', 'string', 'min:2', 'max:255'],
+=======
+        // For nearby search, q is not required
+        $isNearby = str_ends_with($this->path(), 'search/nearby');
+        
+        return [
+            'q' => $isNearby ? ['nullable', 'string', 'min:2', 'max:255'] : ['required', 'string', 'min:2', 'max:255'],
+>>>>>>> 6e876ba9d73195e746d0ed47df06f9269b0e177e
             'types' => ['nullable', 'array'],
             'types.*' => ['string', 'in:tours,hotels,cars,flights'],
             'category_id' => ['nullable', 'exists:categories,id'],
@@ -34,6 +42,22 @@ class SearchRequest extends FormRequest
             'stars' => ['nullable', 'integer', 'min:1', 'max:5'],
             'brand_id' => ['nullable', 'exists:brands,id'],
             'location_id' => ['nullable', 'exists:locations,id'],
+<<<<<<< HEAD
+=======
+            // Flight filters
+            'origin_id' => ['nullable', 'exists:locations,id'],
+            'destination_id' => ['nullable', 'exists:locations,id'],
+            'departure_date' => ['nullable', 'date', 'after_or_equal:today'],
+            'return_date' => ['nullable', 'date', 'after_or_equal:departure_date'],
+            'carrier_id' => ['nullable', 'exists:carriers,id'],
+            'class_id' => ['nullable', 'exists:classes,id'],
+            // Hotel filters
+            'check_in' => ['nullable', 'date', 'after_or_equal:today'],
+            'check_out' => ['nullable', 'date', 'after:check_in'],
+            // Car filters
+            'pickup_date' => ['nullable', 'date', 'after_or_equal:today'],
+            'dropoff_date' => ['nullable', 'date', 'after:pickup_date'],
+>>>>>>> 6e876ba9d73195e746d0ed47df06f9269b0e177e
             'page' => ['nullable', 'integer', 'min:1'],
             'page_size' => ['nullable', 'integer', 'min:1', 'max:100'],
         ];

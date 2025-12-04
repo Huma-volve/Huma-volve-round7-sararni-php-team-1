@@ -24,6 +24,9 @@ class AuthController extends Controller
     public function __construct(
         protected OtpService $otpService,
         protected GoogleOAuthService $googleOAuthService
+
+        // protected GoogleOAuthService $googleOAuthService
+
     ) {}
 
     public function register(RegisterRequest $request): JsonResponse
@@ -269,6 +272,74 @@ class AuthController extends Controller
         ]);
     }
 
+
+    public function googleCallback(Request $request)
+    {
+        $code = $request->query('code');
+        $error = $request->query('error');
+        $state = $request->query('state');
+
+        if ($error) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 'OAUTH_ERROR',
+                    'message' => $error === 'access_denied' ? __('messages.error.oauth_access_denied') : __('messages.error.oauth_error'),
+                ],
+            ], 400);
+        }
+
+        if (! $code) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 'MISSING_CODE',
+                    'message' => __('messages.error.oauth_missing_code'),
+                ],
+            ], 400);
+        }
+
+        try {
+            $tokenData = $this->googleOAuthService->exchangeCodeForToken($code, null);
+
+            $googleUser = $this->googleOAuthService->getUserInfo($tokenData['access_token']);
+
+            $user = $this->googleOAuthService->findOrCreateUser($googleUser);
+
+            $isNewUser = $user->wasRecentlyCreated;
+
+            $token = $user->createToken('auth-token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.google.auth_success'),
+                'data' => [
+                    'user' => new UserResource($user),
+                    'token' => $token,
+                    'is_new_user' => $isNewUser,
+                    'google_id_token' => $tokenData['id_token'] ?? null,
+                    'google_access_token' => $tokenData['access_token'],
+                    'google_token_data' => [
+                        'id_token' => $tokenData['id_token'] ?? null,
+                        'access_token' => $tokenData['access_token'],
+                        'expires_in' => $tokenData['expires_in'] ?? null,
+                        'refresh_token' => $tokenData['refresh_token'] ?? null,
+                        'token_type' => $tokenData['token_type'] ?? 'Bearer',
+                    ],
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 'OAUTH_ERROR',
+                    'message' => __('messages.error.oauth_error'),
+                ],
+            ], 400);
+        }
+    }
+
+
     public function exchangeGoogleCode(Request $request): JsonResponse
     {
         $request->validate([
@@ -374,4 +445,101 @@ class AuthController extends Controller
             ],
         ]);
     }
+
+
+    public function googleLogin(Request $request): JsonResponse
+    {
+        $request->validate([
+            'token' => ['required_without:access_token', 'string'],
+            'access_token' => ['required_without:token', 'string'],
+        ]);
+
+        try {
+            // If ID token is provided, decode it to get user info
+            if ($request->has('token')) {
+                $idToken = $request->token;
+                $parts = explode('.', $idToken);
+
+                if (count($parts) !== 3) {
+                    throw new \Exception('Invalid ID token format');
+                }
+
+                // Decode the payload (second part)
+                $payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $parts[1])), true);
+
+                if (! $payload) {
+                    throw new \Exception('Failed to decode ID token');
+                }
+
+                // Convert ID token payload to Google user format
+                $googleUser = [
+                    'id' => $payload['sub'] ?? null,
+                    'email' => $payload['email'] ?? null,
+                    'verified_email' => $payload['email_verified'] ?? false,
+                    'name' => $payload['name'] ?? null,
+                    'given_name' => $payload['given_name'] ?? null,
+                    'family_name' => $payload['family_name'] ?? null,
+                    'picture' => $payload['picture'] ?? null,
+                ];
+            } else {
+                // Use access token to get user info from Google API
+                $googleUser = $this->googleOAuthService->getUserInfo($request->access_token);
+            }
+
+            if (! $googleUser['id'] || ! $googleUser['email']) {
+                throw new \Exception('Missing required user information from token');
+            }
+
+            $user = $this->googleOAuthService->findOrCreateUser($googleUser);
+
+            $isNewUser = $user->wasRecentlyCreated;
+
+            $token = $user->createToken('auth-token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.google.auth_success'),
+                'data' => [
+                    'user' => new UserResource($user),
+                    'token' => $token,
+                    'is_new_user' => $isNewUser,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 'GOOGLE_LOGIN_ERROR',
+                    'message' => __('messages.error.oauth_error'),
+                ],
+            ], 400);
+        }
+    }
+
+    public function getGoogleUserData(Request $request): JsonResponse
+    {
+        $request->validate([
+            'access_token' => ['required', 'string'],
+        ]);
+
+        try {
+            $googleUser = $this->googleOAuthService->getUserInfo($request->access_token);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'user' => $googleUser,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 'GOOGLE_USER_DATA_ERROR',
+                    'message' => __('messages.error.oauth_error'),
+                ],
+            ], 400);
+        }
+    }
+
 }

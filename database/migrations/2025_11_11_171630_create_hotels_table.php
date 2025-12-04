@@ -22,13 +22,13 @@ return new class extends Migration
             $table->foreignId('location_id')->constrained('locations')->onDelete('cascade');
             $table->decimal('location_lat', 10, 8)->nullable();
             $table->decimal('location_lng', 11, 8)->nullable();
+
             $table->tinyInteger('stars')->nullable();
             $table->integer('rooms_count')->nullable();
             $table->json('recommended')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
-
 
            $table->index('category_id');
            $table->index('name');

@@ -23,6 +23,8 @@ class Hotel extends Model
         'location_id',
         'location_lat',
         'location_lng',
+        'slug',
+        'location_id',
         'stars',
         'rooms_count',
         'recommended',
@@ -34,8 +36,10 @@ class Hotel extends Model
         return [
             'recommended' => 'array',
             'policies' => 'array',
+
         ];
     }
+
 
     public function location(): BelongsTo
     {
@@ -53,6 +57,5 @@ class Hotel extends Model
         return $this->hasMany(Favorite::class, 'item_id')
             ->where('category', 'hotel');
     }
-
 
 }

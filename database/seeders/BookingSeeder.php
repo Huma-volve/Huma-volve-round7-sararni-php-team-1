@@ -93,10 +93,10 @@ class BookingSeeder extends Seeder
                     continue;
                 }
 
-                $room = Room::first();
+                 $room = Room::first();
                 $ratepaln = RatePlan::first();
 
-                $booking = Booking::create([
+                 $booking = Booking::create([
                     'user_id' => $customer->id,
                     'category' => 'tour',
                     'item_id' => $tour->id,

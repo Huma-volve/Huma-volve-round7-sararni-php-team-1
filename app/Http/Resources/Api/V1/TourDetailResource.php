@@ -2,19 +2,29 @@
 
 namespace App\Http\Resources\Api\V1;
 
+
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TourDetailResource extends JsonResource
 {
+
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
-        $user = $request->user();
-        $isFavorited = false;
+        // Get user from request - try multiple methods
+        // In Laravel, when JsonResource is used, the request is automatically passed
+        // But in some cases (like tests), we need to use request() helper or auth()
+        $user = $request->user()
+            ?? request()->user()
+            ?? auth()->user();
 
-        if ($user) {
-            $isFavorited = $this->favorites()->where('user_id', $user->id)->exists();
-        }
+        $isFavorited = $user ? $this->isFavorited($request, $user) : false;
 
         return [
             'id' => $this->id,
@@ -22,17 +32,11 @@ class TourDetailResource extends JsonResource
             'name' => $this->name,
             'short_description' => $this->short_description,
             'description' => $this->description,
-            'main_image' => $this->getFirstMediaUrl('main_image'),
-            'main_image_thumb' => $this->getFirstMediaUrl('main_image', 'thumb'),
-            'main_image_preview' => $this->getFirstMediaUrl('main_image', 'preview'),
-            'gallery' => $this->getMedia('gallery')->map(function ($media) {
-                return [
-                    'id' => $media->id,
-                    'url' => $media->getUrl(),
-                    'thumb' => $media->getUrl('thumb'),
-                    'preview' => $media->getUrl('preview'),
-                ];
-            }),
+
+            'main_image' => $this->getMainImageUrl(),
+            'main_image_thumb' => $this->getMainImageUrl('thumb'),
+            'main_image_preview' => $this->getMainImageUrl('preview'),
+            'gallery' => $this->getGalleryImages(),
             'category' => [
                 'id' => $this->category->id ?? null,
                 'name' => $this->category->title ?? null,
@@ -107,5 +111,113 @@ class TourDetailResource extends JsonResource
                     });
             }),
         ];
+    }
+
+
+    /**
+     * Check if the tour is favorited by the authenticated user
+     */
+    protected function isFavorited(Request $request, $user): bool
+    {
+        // Check if is_user_favorited count is already loaded (from withCount)
+        if (isset($this->resource->is_user_favorited)) {
+            return (bool) $this->resource->is_user_favorited;
+        }
+
+        // Fallback: check if tour is in user's favorites using Favorite model directly
+        // This is more reliable than using the relationship
+        return Favorite::where('user_id', $user->id)
+            ->where('category', 'tour')
+            ->where('item_id', $this->id)
+            ->exists();
+    }
+
+    /**
+     * Get main image URL with fallback to default image
+     */
+    protected function getMainImageUrl(?string $conversion = null): string
+    {
+        // getFirstMediaUrl doesn't accept null, so we need to handle it differently
+        if ($conversion === null) {
+            $url = $this->getFirstMediaUrl('main_image');
+        } else {
+            $url = $this->getFirstMediaUrl('main_image', $conversion);
+        }
+
+        // If no image exists, return default placeholder
+        if (empty($url)) {
+            return $this->getDefaultImageUrl($conversion);
+        }
+
+        return $url;
+    }
+
+    /**
+     * Get gallery images with fallback
+     */
+    protected function getGalleryImages(): array
+    {
+        $gallery = $this->getMedia('gallery');
+
+        // If no gallery images, return array with one default image
+        if ($gallery->isEmpty()) {
+            return [
+                [
+                    'id' => null,
+                    'url' => $this->getDefaultImageUrl(),
+                    'thumb' => $this->getDefaultImageUrl('thumb'),
+                    'preview' => $this->getDefaultImageUrl('preview'),
+                ],
+            ];
+        }
+
+        return $gallery->map(function ($media) {
+            return [
+                'id' => $media->id,
+                'url' => $media->getUrl(),
+                'thumb' => $media->getUrl('thumb'),
+                'preview' => $media->getUrl('preview'),
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Get default placeholder image URL
+     */
+    protected function getDefaultImageUrl(?string $conversion = null): string
+    {
+        // Check if custom default image is configured
+        $defaultImagePath = config('app.default_tour_image', 'images/default-tour.jpg');
+
+        // If file exists in public directory, use it
+        if (file_exists(public_path($defaultImagePath))) {
+            $baseUrl = config('app.url', url('/'));
+            $url = rtrim($baseUrl, '/').'/'.ltrim($defaultImagePath, '/');
+
+            // For conversions, you might want to use a service or return the same URL
+            // For now, return the same URL for all conversions
+            return $url;
+        }
+
+        // Fallback to placeholder service
+        $width = match ($conversion) {
+            'thumb' => 300,
+            'preview' => 800,
+            default => 1200,
+        };
+
+        $height = match ($conversion) {
+            'thumb' => 300,
+            'preview' => 600,
+            default => 800,
+        };
+
+        // Using dummyimage.com service (more reliable and works well)
+        // Format: https://dummyimage.com/{width}x{height}/{bg-color}/{text-color}&text={text}
+        $bgColor = '4F46E5'; // Indigo
+        $textColor = 'FFFFFF'; // White
+        $text = urlencode('Tour Image');
+
+        return "https://dummyimage.com/{$width}x{$height}/{$bgColor}/{$textColor}&text={$text}";
     }
 }
